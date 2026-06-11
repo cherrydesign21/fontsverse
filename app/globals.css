@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* ── Custom animations ── */
+@keyframes slide-in {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.animate-slide-in  { animation: slide-in  0.3s ease forwards; }
+.animate-modal-in  { animation: modal-in  0.22s ease forwards; }
+
+/* ── Shared form elements ── */
+.fv-input {
+  @apply w-full px-3.5 py-2.5 rounded-lg text-sm text-white outline-none transition-all;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.fv-input:focus {
+  border-color: rgba(124,106,247,0.55);
+  background: rgba(255,255,255,0.06);
+}
+.fv-input option { background: #0d0d1a; }
+
+.fv-btn-primary {
+  @apply py-2.5 px-4 rounded-lg font-semibold text-sm text-white cursor-pointer
+         transition-opacity disabled:opacity-50;
+  background: linear-gradient(135deg, #7c6af7, #6366f1);
+}
+.fv-btn-primary:hover { opacity: 0.88; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(124,106,247,0.3); border-radius: 3px; }
