@@ -41,10 +41,10 @@ export default function FontDetailModal({ font, onClose }: Props) {
           letterSpacing: font.letter_spacing, fontSize: "clamp(22px,4vw,34px)",
         }}>{font.name}</span>
       </div>
-      <h2 className="text-xl font-bold text-white mb-0.5">{font.name}</h2>
-      <p className="text-white/30 text-xs mb-2">{font.category} · {font.downloads.toLocaleString()} downloads</p>
-      <p className="text-xs text-white/25 mb-4">
-        CDN: <code className="text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded font-mono text-[11px]">
+      <h2 className="text-xl font-bold text-gray-900 mb-0.5">{font.name}</h2>
+      <p className="text-gray-400 text-xs mb-2">{font.category} · {font.downloads.toLocaleString()} downloads</p>
+      <p className="text-xs text-gray-400 mb-4">
+        CDN: <code className="text-violet-500 bg-violet-50 px-2 py-0.5 rounded font-mono text-[11px]">
           https://fontsverse.app/fonts/{font.slug}/
         </code>
       </p>
@@ -52,20 +52,20 @@ export default function FontDetailModal({ font, onClose }: Props) {
         {FRAMEWORKS.map(f => (
           <button key={f.id} onClick={() => { setFw(f.id); setCopied(false); }}
             className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] border transition-all
-              ${fw===f.id ? "bg-violet-500/18 border-violet-500/30 text-violet-300"
-                          : "bg-white/4 border-white/8 text-white/45 hover:text-white/70"}`}>
+              ${fw===f.id ? "bg-violet-50 border-violet-300 text-violet-600"
+                          : "bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-700"}`}>
             <span>{f.icon}</span>{f.label}
           </button>
         ))}
       </div>
       <div className="relative">
-        <pre className="bg-black/40 border border-white/6 rounded-lg p-4 text-[11px]
-          text-emerald-300 overflow-x-auto leading-relaxed font-mono whitespace-pre-wrap
+        <pre className="bg-gray-900 border border-gray-200 rounded-lg p-4 text-[11px]
+          text-emerald-400 overflow-x-auto leading-relaxed font-mono whitespace-pre-wrap
           break-words max-h-56 overflow-y-auto">{getSnippet(fw, font.name)}</pre>
         <button onClick={copy}
           className={`absolute top-2.5 right-2.5 px-2.5 py-1 rounded text-[11px] border transition-all
-            ${copied ? "bg-emerald-500/25 border-emerald-500/30 text-emerald-300"
-                     : "bg-violet-500/15 border-violet-500/20 text-violet-300 hover:bg-violet-500/25"}`}>
+            ${copied ? "bg-emerald-50 border-emerald-300 text-emerald-600"
+                     : "bg-violet-50 border-violet-200 text-violet-600 hover:bg-violet-100"}`}>
           {copied ? "✓ Copied!" : "Copy"}
         </button>
       </div>
@@ -74,8 +74,8 @@ export default function FontDetailModal({ font, onClose }: Props) {
           <button key={fmt} onClick={() => download(fmt)}
             className={`px-3 py-1.5 rounded-md text-xs border transition-all
               ${font[`file_${fmt}` as keyof DBFont]
-                ? "bg-violet-500/10 border-violet-500/20 text-violet-300 hover:bg-violet-500/20"
-                : "bg-white/5 border-white/10 text-white/30 cursor-not-allowed"}`}>
+                ? "bg-violet-50 border-violet-200 text-violet-600 hover:bg-violet-100"
+                : "bg-gray-50 border-gray-200 text-gray-300 cursor-not-allowed"}`}>
             ↓ {fmt.toUpperCase()}
           </button>
         ))}

@@ -35,7 +35,7 @@ export default function ParticleCanvas() {
         size: Math.random() * 18 + 10,
         speed: Math.random() * 0.45 + 0.1,
         drift: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.13 + 0.02,
+        opacity: Math.random() * 0.07 + 0.02,
         hue: Math.random() * 80 + 200,
       };
     }
@@ -54,7 +54,7 @@ export default function ParticleCanvas() {
       particles.forEach((p) => {
         ctx.save();
         ctx.globalAlpha = p.opacity;
-        ctx.fillStyle = `hsl(${p.hue},55%,72%)`;
+        ctx.fillStyle = `hsl(${p.hue},55%,45%)`;
         ctx.font = `${p.size}px ${p.font}`;
         ctx.fillText(p.ch, p.x, p.y);
         ctx.restore();

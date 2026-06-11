@@ -30,7 +30,7 @@ export default function ContactPageClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07070f] text-white">
+    <div className="min-h-screen bg-[#f5f4ff] text-gray-900">
       <ParticleCanvas />
       <Header
         onSearch={() => {}}
@@ -44,92 +44,66 @@ export default function ContactPageClient() {
       <main className="relative z-10 max-w-[680px] mx-auto px-6 pt-28 pb-20">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-black tracking-tight mb-3">Get in Touch</h1>
-          <p className="text-white/40 text-sm leading-relaxed">
+          <p className="text-gray-500 text-sm leading-relaxed">
             Have a question, bug report, or just want to say hello?<br />We usually respond within 24 hours.
           </p>
         </div>
 
-        {/* Contact cards */}
         <div className="grid grid-cols-3 gap-3 mb-10">
           {[
             { icon: "📧", label: "Email", value: "hello@fontsverse.app" },
             { icon: "💬", label: "Discord", value: "discord.gg/fontsverse" },
             { icon: "🐦", label: "Twitter", value: "@fontsverse" },
           ].map((c) => (
-            <div key={c.label} className="bg-white/3 border border-white/7 rounded-xl p-4 text-center">
+            <div key={c.label} className="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
               <div className="text-2xl mb-2">{c.icon}</div>
-              <p className="text-white/40 text-[10px] uppercase tracking-widest mb-1">{c.label}</p>
-              <p className="text-white/70 text-xs font-medium">{c.value}</p>
+              <p className="text-gray-400 text-[10px] uppercase tracking-widest mb-1">{c.label}</p>
+              <p className="text-gray-600 text-xs font-medium">{c.value}</p>
             </div>
           ))}
         </div>
 
-        {/* Form */}
         {!submitted ? (
-          <form onSubmit={handleSubmit} className="bg-white/2 border border-white/7 rounded-2xl p-7 space-y-4">
+          <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-7 space-y-4 shadow-sm">
             <h2 className="text-lg font-bold mb-1">Send a message</h2>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-white/40 text-xs block mb-1.5">Name</label>
-                <input
-                  className="fv-input w-full"
-                  placeholder="Your name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
+                <label className="text-gray-400 text-xs block mb-1.5">Name</label>
+                <input className="fv-input w-full" placeholder="Your name"
+                  value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
               </div>
               <div>
-                <label className="text-white/40 text-xs block mb-1.5">Email *</label>
-                <input
-                  className="fv-input w-full"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  required
-                />
+                <label className="text-gray-400 text-xs block mb-1.5">Email *</label>
+                <input className="fv-input w-full" type="email" placeholder="you@example.com"
+                  value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
               </div>
             </div>
 
             <div>
-              <label className="text-white/40 text-xs block mb-1.5">Topic</label>
-              <select
-                className="fv-input w-full"
-                value={form.topic}
-                onChange={(e) => setForm({ ...form, topic: e.target.value })}
-              >
+              <label className="text-gray-400 text-xs block mb-1.5">Topic</label>
+              <select className="fv-input w-full" value={form.topic}
+                onChange={(e) => setForm({ ...form, topic: e.target.value })}>
                 {TOPICS.map((t) => <option key={t}>{t}</option>)}
               </select>
             </div>
 
             <div>
-              <label className="text-white/40 text-xs block mb-1.5">Message *</label>
-              <textarea
-                className="fv-input w-full resize-none"
-                rows={5}
+              <label className="text-gray-400 text-xs block mb-1.5">Message *</label>
+              <textarea className="fv-input w-full resize-none" rows={5}
                 placeholder="Tell us what's on your mind…"
-                value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-                required
-              />
+                value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required />
             </div>
 
-            <button type="submit" className="fv-btn-primary w-full">
-              Send Message
-            </button>
+            <button type="submit" className="fv-btn-primary w-full">Send Message</button>
           </form>
         ) : (
-          <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-12 text-center">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-12 text-center">
             <div className="text-5xl mb-4">✉️</div>
-            <h2 className="text-xl font-bold text-white mb-2">Message sent!</h2>
-            <p className="text-white/40 text-sm mb-6">We'll get back to you at {form.email} within 24 hours.</p>
-            <button
-              onClick={() => { setSubmitted(false); setForm({ name: "", email: "", topic: "General Inquiry", message: "" }); }}
-              className="fv-btn-primary !w-auto px-8"
-            >
-              Send Another
-            </button>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Message sent!</h2>
+            <p className="text-gray-500 text-sm mb-6">We'll get back to you at {form.email} within 24 hours.</p>
+            <button onClick={() => { setSubmitted(false); setForm({ name: "", email: "", topic: "General Inquiry", message: "" }); }}
+              className="fv-btn-primary !w-auto px-8">Send Another</button>
           </div>
         )}
       </main>

@@ -15,15 +15,15 @@
 
 /* ── Shared form elements ── */
 .fv-input {
-  @apply w-full px-3.5 py-2.5 rounded-lg text-sm text-white outline-none transition-all;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  @apply w-full px-3.5 py-2.5 rounded-lg text-sm text-gray-900 outline-none transition-all;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.12);
 }
 .fv-input:focus {
-  border-color: rgba(124,106,247,0.55);
-  background: rgba(255,255,255,0.06);
+  border-color: rgba(124,106,247,0.6);
+  background: rgba(0,0,0,0.02);
 }
-.fv-input option { background: #0d0d1a; }
+.fv-input option { background: #ffffff; color: #111827; }
 
 .fv-btn-primary {
   @apply py-2.5 px-4 rounded-lg font-semibold text-sm text-white cursor-pointer
@@ -35,4 +35,4 @@
 /* ── Scrollbar ── */
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(124,106,247,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(124,106,247,0.25); border-radius: 3px; }

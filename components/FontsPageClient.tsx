@@ -39,7 +39,7 @@ export default function FontsPageClient() {
   const CATS = ["All","Sans-Serif","Serif","Monospace","Display","Condensed","Handwriting"];
 
   return (
-    <div className="min-h-screen bg-[#07070f] text-white">
+    <div className="min-h-screen bg-[#f5f4ff] text-gray-900">
       <ParticleCanvas />
       <Header onSearch={handleSearch} onLoginClick={() => setModal("auth")}
         onUploadClick={() => user ? setModal("upload") : setModal("auth")}
@@ -48,7 +48,7 @@ export default function FontsPageClient() {
 
       <main className="relative z-10 max-w-[1160px] mx-auto px-6 pt-24 pb-20">
         <h1 className="text-3xl font-black mb-2">Browse All Fonts</h1>
-        <p className="text-white/40 text-sm mb-8">
+        <p className="text-gray-400 text-sm mb-8">
           {loading ? "Loading…" : `${filtered.length} font${filtered.length!==1?"s":""} available`}
         </p>
 
@@ -56,7 +56,9 @@ export default function FontsPageClient() {
           {CATS.map(c => (
             <button key={c} onClick={() => setCategory(c)}
               className={`px-4 py-1.5 rounded-full text-[12px] font-medium border transition-all
-                ${category===c ? "bg-violet-500 text-white border-violet-500" : "bg-white/4 border-white/10 text-white/50 hover:border-violet-500/40"}`}>
+                ${category===c
+                  ? "bg-violet-500 text-white border-violet-500"
+                  : "bg-white border-gray-200 text-gray-500 hover:border-violet-400/60"}`}>
               {c}
             </button>
           ))}
@@ -64,7 +66,7 @@ export default function FontsPageClient() {
 
         {loading ? (
           <div className="grid gap-3.5" style={{ gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))" }}>
-            {Array.from({length:12}).map((_,i) => <div key={i} className="rounded-xl bg-white/3 animate-pulse min-h-[160px]" />)}
+            {Array.from({length:12}).map((_,i) => <div key={i} className="rounded-xl bg-gray-200 animate-pulse min-h-[160px]" />)}
           </div>
         ) : (
           <div className="grid gap-3.5" style={{ gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))" }}>

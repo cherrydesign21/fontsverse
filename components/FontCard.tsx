@@ -7,12 +7,12 @@ interface Props { font: DBFont; onClick: (f: DBFont) => void; }
 export default function FontCard({ font, onClick }: Props) {
   const [hovered, setHovered] = useState(false);
   return (
-    <div className="rounded-xl overflow-hidden cursor-pointer border border-white/4
-      flex flex-col min-h-[160px] transition-all duration-300"
+    <div className="rounded-xl overflow-hidden cursor-pointer border border-gray-200
+      flex flex-col min-h-40 transition-all duration-300"
       style={{
         background: font.bg_color,
         transform: hovered ? "translateY(-7px) scale(1.025)" : "translateY(0) scale(1)",
-        boxShadow: hovered ? `0 22px 50px ${font.bg_color}88` : "0 4px 18px rgba(0,0,0,0.35)",
+        boxShadow: hovered ? `0 22px 50px ${font.bg_color}88` : "0 2px 12px rgba(0,0,0,0.08)",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -32,8 +32,8 @@ export default function FontCard({ font, onClick }: Props) {
         </span>
       </div>
       <div className="px-3.5 py-2.5 flex justify-between items-center"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <span className="text-[10px] tracking-widest text-white/25">{font.category.toUpperCase()}</span>
+        style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <span className="text-[10px] tracking-widest text-white/40">{font.category.toUpperCase()}</span>
         <span className="text-[10px] tracking-tight transition-opacity duration-200"
           style={{ color: font.text_color, opacity: hovered ? 1 : 0 }}>
           Get Code →

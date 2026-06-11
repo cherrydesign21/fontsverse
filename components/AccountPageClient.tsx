@@ -30,13 +30,13 @@ export default function AccountPageClient() {
   }, [profile]);
 
   if (!user) return (
-    <div className="min-h-screen bg-[#07070f] text-white flex items-center justify-center">
+    <div className="min-h-screen bg-[#f5f4ff] text-gray-900 flex items-center justify-center">
       <ParticleCanvas />
       <div className="relative z-10 text-center">
         <div className="text-5xl mb-4">🔒</div>
         <h2 className="text-xl font-bold mb-2">Sign in required</h2>
-        <p className="text-white/40 text-sm mb-6">Please sign in to view your account.</p>
-        <button onClick={() => setModal("auth")} className="fv-btn-primary !w-auto px-8">Sign In</button>
+        <p className="text-gray-500 text-sm mb-6">Please sign in to view your account.</p>
+        <button onClick={() => setModal("auth")} className="fv-btn-primary w-auto! px-8">Sign In</button>
       </div>
       {modal === "auth" && <AuthModal onClose={close} />}
     </div>
@@ -56,14 +56,13 @@ export default function AccountPageClient() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-[#07070f] text-white">
+    <div className="min-h-screen bg-[#f5f4ff] text-gray-900">
       <ParticleCanvas />
       <Header onSearch={() => {}} onLoginClick={() => setModal("auth")}
         onUploadClick={() => setModal("upload")} onAdClick={() => setModal("ad")}
         onAdminClick={() => setModal("admin")} onAccountClick={() => {}} />
 
       <main className="relative z-10 max-w-[760px] mx-auto px-6 pt-24 pb-20">
-        {/* Profile header */}
         <div className="flex items-center gap-5 mb-8">
           <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white shrink-0
             ${isAdmin ? "bg-gradient-to-br from-amber-400 to-orange-500" : "bg-gradient-to-br from-violet-500 to-pink-500"}`}>
@@ -72,86 +71,83 @@ export default function AccountPageClient() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-black">{profile?.name}</h1>
-              {isAdmin && <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded font-bold">ADMIN</span>}
+              {isAdmin && <span className="text-[10px] bg-amber-100 text-amber-600 border border-amber-200 px-2 py-0.5 rounded font-bold">ADMIN</span>}
             </div>
-            <p className="text-white/40 text-sm">{user?.email}</p>
+            <p className="text-gray-400 text-sm">{user?.email}</p>
           </div>
           <button onClick={async () => { await signOut(); router.push("/"); }}
-            className="ml-auto px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/20
-              text-red-400 hover:bg-red-500/20 text-sm transition-all">
+            className="ml-auto px-4 py-2 rounded-lg bg-red-50 border border-red-200
+              text-red-500 hover:bg-red-100 text-sm transition-all">
             Sign Out
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 bg-white/4 rounded-xl p-1 mb-7 w-fit">
+        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-7 w-fit">
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
               className={`px-4 py-2 rounded-lg text-sm transition-all
-                ${tab === t.id ? "bg-violet-500/25 text-violet-300 font-medium" : "text-white/40 hover:text-white/70"}`}>
+                ${tab === t.id ? "bg-violet-100 text-violet-600 font-medium" : "text-gray-400 hover:text-gray-600"}`}>
               {t.label}
             </button>
           ))}
         </div>
 
-        {/* Profile */}
         {tab === "profile" && (
-          <div className="bg-white/2 border border-white/7 rounded-2xl p-7 space-y-4">
+          <div className="bg-white border border-gray-200 rounded-2xl p-7 space-y-4 shadow-sm">
             <h2 className="text-lg font-bold">Account Settings</h2>
             <div>
-              <label className="text-white/40 text-xs block mb-1.5">Display Name</label>
+              <label className="text-gray-400 text-xs block mb-1.5">Display Name</label>
               <input className="fv-input" value={name} onChange={e => setName(e.target.value)} />
             </div>
             <div>
-              <label className="text-white/40 text-xs block mb-1.5">Email Address</label>
+              <label className="text-gray-400 text-xs block mb-1.5">Email Address</label>
               <input className="fv-input" type="email" value={email} onChange={e => setEmail(e.target.value)} />
             </div>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { val: fonts.length,   label: "Fonts" },
+                { val: fonts.length, label: "Fonts" },
                 { val: fonts.filter(f => f.is_public).length, label: "Public" },
-                { val: profile?.role,      label: "Role" },
+                { val: profile?.role, label: "Role" },
               ].map(s => (
-                <div key={s.label} className="bg-white/4 border border-white/7 rounded-lg p-3 text-center">
-                  <p className="text-lg font-black text-white capitalize">{s.val}</p>
-                  <p className="text-white/35 text-[11px] mt-0.5">{s.label}</p>
+                <div key={s.label} className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                  <p className="text-lg font-black text-gray-900 capitalize">{s.val}</p>
+                  <p className="text-gray-400 text-[11px] mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
             {isAdmin && (
-              <div className="bg-amber-500/8 border border-amber-500/18 rounded-lg px-3 py-2">
-                <p className="text-amber-300 text-xs">👑 Admin account — <a href="/admin" className="underline">Open Admin Dashboard →</a></p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                <p className="text-amber-700 text-xs">👑 Admin account — <a href="/admin" className="underline">Open Admin Dashboard →</a></p>
               </div>
             )}
-            <button onClick={save} className={`fv-btn-primary w-full ${saved ? "!bg-emerald-700" : ""}`}>
+            <button onClick={save} className={`fv-btn-primary w-full ${saved ? "bg-emerald-600!" : ""}`}>
               {saved ? "✓ Saved" : "Save Changes"}
             </button>
           </div>
         )}
 
-        {/* Fonts */}
         {tab === "fonts" && (
           fonts.length === 0 ? (
             <div className="text-center py-16">
               <div className="text-5xl mb-4">🔤</div>
-              <p className="text-white/40 mb-4">No fonts uploaded yet</p>
-              <button onClick={() => setModal("upload")} className="fv-btn-primary !w-auto px-8">Upload First Font</button>
+              <p className="text-gray-400 mb-4">No fonts uploaded yet</p>
+              <button onClick={() => setModal("upload")} className="fv-btn-primary w-auto! px-8">Upload First Font</button>
             </div>
           ) : (
             <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))" }}>
               {fonts.map(f => (
-                <div key={f.id} className="rounded-xl border border-white/8 overflow-hidden flex flex-col" style={{ background: f.bg_color }}>
+                <div key={f.id} className="rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm" style={{ background: f.bg_color }}>
                   <div className="flex-1 flex items-center justify-center p-5 min-h-[100px]">
                     <span className="text-xl font-bold" style={{ color: f.text_color }}>{f.name}</span>
                   </div>
-                  <div className="px-3.5 py-2 border-t border-white/5 flex justify-between items-center">
-                    <span className="text-[10px] tracking-widest text-white/25">{f.category.toUpperCase()}</span>
+                  <div className="px-3.5 py-2 border-t border-white/10 flex justify-between items-center">
+                    <span className="text-[10px] tracking-widest text-white/40">{f.category.toUpperCase()}</span>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] ${f.is_public ? "text-emerald-400" : "text-white/25"}`}>
+                      <span className={`text-[10px] ${f.is_public ? "text-emerald-400" : "text-white/30"}`}>
                         {f.is_public ? "● PUBLIC" : "○ PRIVATE"}
                       </span>
                       <button onClick={() => { removeFont(f.id); notify(`"${f.name}" removed`); }}
-                        className="text-red-400/50 hover:text-red-400 text-xs">✕</button>
+                        className="text-red-400/60 hover:text-red-400 text-xs">✕</button>
                     </div>
                   </div>
                 </div>
@@ -160,12 +156,11 @@ export default function AccountPageClient() {
           )
         )}
 
-        {/* Projects */}
         {tab === "projects" && (
           <div className="text-center py-16">
             <div className="text-5xl mb-4">📁</div>
-            <p className="text-white/40 mb-1">Projects coming soon</p>
-            <p className="text-white/25 text-sm">Group fonts into projects for team integration.</p>
+            <p className="text-gray-400 mb-1">Projects coming soon</p>
+            <p className="text-gray-300 text-sm">Group fonts into projects for team integration.</p>
           </div>
         )}
       </main>

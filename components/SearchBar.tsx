@@ -55,7 +55,7 @@ export default function SearchBar({ onSearch, compact }: Props) {
   return (
     <div ref={containerRef} className="relative w-full">
       <div className="relative flex items-center">
-        <svg className="absolute left-3 w-3.5 h-3.5 text-white/30 pointer-events-none"
+        <svg className="absolute left-3 w-3.5 h-3.5 text-gray-400 pointer-events-none"
           fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
@@ -64,24 +64,24 @@ export default function SearchBar({ onSearch, compact }: Props) {
           onKeyDown={keyDown}
           onFocus={() => { if (suggestions.length > 0) setOpen(true); }}
           placeholder="Search fonts…"
-          className={`w-full pl-9 pr-8 rounded-lg bg-white/5 border border-white/8
-            text-white placeholder-white/25 outline-none transition-all
-            focus:border-violet-500/60 focus:bg-white/7
+          className={`w-full pl-9 pr-8 rounded-lg bg-gray-100 border border-gray-200
+            text-gray-900 placeholder-gray-400 outline-none transition-all
+            focus:border-violet-400/70 focus:bg-white
             ${compact ? "py-1.5 text-[13px]" : "py-2 text-[13px]"}`}
           autoComplete="off" spellCheck={false} />
         {query && (
           <button onClick={clear}
-            className="absolute right-2.5 text-white/30 hover:text-white/70 transition-colors text-xs"
+            className="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors text-xs"
             tabIndex={-1}>✕</button>
         )}
       </div>
 
       {open && suggestions.length > 0 && (
-        <div className="absolute top-full mt-1.5 left-0 right-0 z-[9999]
-          bg-[#0d0d1e] border border-white/10 rounded-xl overflow-hidden
-          shadow-[0_16px_48px_rgba(0,0,0,0.7)]">
-          <div className="px-3 py-2 border-b border-white/5">
-            <span className="text-[10px] text-white/30 uppercase tracking-widest font-semibold">
+        <div className="absolute top-full mt-1.5 left-0 right-0 z-9999
+          bg-white border border-gray-200 rounded-xl overflow-hidden
+          shadow-[0_8px_24px_rgba(0,0,0,0.10)]">
+          <div className="px-3 py-2 border-b border-gray-100">
+            <span className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
               {suggestions.length} font{suggestions.length!==1?"s":""} found
             </span>
           </div>
@@ -90,26 +90,26 @@ export default function SearchBar({ onSearch, compact }: Props) {
               onMouseDown={e => { e.preventDefault(); pick(font.name); }}
               onMouseEnter={() => setHi(i)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors
-                ${hi===i ? "bg-violet-500/15" : "hover:bg-white/4"}`}>
-              <div className="w-8 h-8 rounded-md flex-shrink-0 flex items-center justify-center"
+                ${hi===i ? "bg-violet-50" : "hover:bg-gray-50"}`}>
+              <div className="w-8 h-8 rounded-md shrink-0 flex items-center justify-center"
                 style={{ background: font.bg_color }}>
                 <span className="text-[11px] font-bold" style={{ color: font.text_color }}>
                   {font.name.slice(0,2)}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] text-white/90 font-medium truncate">
+                <p className="text-[13px] text-gray-900 font-medium truncate">
                   <Hl text={font.name} q={query} />
                 </p>
-                <p className="text-[11px] text-white/30">{font.category}</p>
+                <p className="text-[11px] text-gray-400">{font.category}</p>
               </div>
-              <span className={`text-violet-400 text-xs transition-opacity ${hi===i?"opacity-100":"opacity-0"}`}>↵</span>
+              <span className={`text-violet-500 text-xs transition-opacity ${hi===i?"opacity-100":"opacity-0"}`}>↵</span>
             </button>
           ))}
           {query.trim() && (
             <button onMouseDown={e => { e.preventDefault(); setOpen(false); onSearch(query.trim()); }}
-              className="w-full px-3 py-2.5 text-left text-[12px] text-violet-400
-                hover:bg-violet-500/10 border-t border-white/5 transition-colors">
+              className="w-full px-3 py-2.5 text-left text-[12px] text-violet-500
+                hover:bg-violet-50 border-t border-gray-100 transition-colors">
               See all results for &ldquo;{query}&rdquo; →
             </button>
           )}
@@ -124,5 +124,5 @@ function Hl({ text, q }: { text: string; q: string }) {
   if (!qt) return <>{text}</>;
   const i = text.toLowerCase().indexOf(qt.toLowerCase());
   if (i === -1) return <>{text}</>;
-  return <>{text.slice(0,i)}<mark className="bg-violet-500/30 text-violet-200 rounded-[2px] px-0.5 not-italic">{text.slice(i,i+qt.length)}</mark>{text.slice(i+qt.length)}</>;
+  return <>{text.slice(0,i)}<mark className="bg-violet-100 text-violet-700 rounded-xs px-0.5 not-italic">{text.slice(i,i+qt.length)}</mark>{text.slice(i+qt.length)}</>;
 }
