@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+function getAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+}
 
 // GET — admin stats
 export async function GET() {
+  const supabaseAdmin = getAdmin();
   const [fontsRes, usersRes, downloadsRes, adsRes] = await Promise.all([
     supabaseAdmin.from("fonts").select("id, is_public", { count: "exact" }),
     supabaseAdmin.from("profiles").select("id, role", { count: "exact" }),
@@ -28,6 +31,7 @@ export async function GET() {
 
 // POST — promote user to admin (super admin action)
 export async function POST(req: NextRequest) {
+  const supabaseAdmin = getAdmin();
   const { email, role } = await req.json();
   if (!email || !role) return NextResponse.json({ error: "email and role required" }, { status: 400 });
 

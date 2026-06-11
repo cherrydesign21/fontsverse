@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// Server-side client uses service role for storage operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+function getAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+}
 
 const ALLOWED = ["font/ttf","font/otf","font/woff","font/woff2",
   "application/octet-stream","application/x-font-ttf",
@@ -13,6 +14,7 @@ const ALLOWED = ["font/ttf","font/otf","font/woff","font/woff2",
   "application/font-sfnt","application/vnd.ms-fontobject"];
 
 export async function POST(req: NextRequest) {
+  const supabaseAdmin = getAdmin();
   try {
     const formData = await req.formData();
     const file     = formData.get("file") as File | null;
