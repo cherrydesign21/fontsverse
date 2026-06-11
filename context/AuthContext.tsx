@@ -60,9 +60,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, name: string) => {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://fontsverse.vercel.app";
     const { error } = await supabase.auth.signUp({
       email, password,
-      options: { data: { name } },
+      options: {
+        data: { name },
+        emailRedirectTo: `${siteUrl}/`,
+      },
     });
     if (error) return { error: error.message };
     return {};
