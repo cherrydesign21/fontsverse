@@ -45,6 +45,7 @@ export default function AdminPageClient() {
     <div className="min-h-screen bg-[#f5f4ff] text-gray-900 flex items-center justify-center">
       <ParticleCanvas />
       <div className="relative z-10 text-center">
+        <img src="/logo.svg" alt="FontsVerse" width={140} height={24} className="mx-auto mb-8" />
         <div className="text-5xl mb-4">🔒</div>
         <h2 className="text-xl font-bold mb-2">Sign in required</h2>
         <p className="text-gray-500 text-sm mb-6">Please sign in to continue.</p>

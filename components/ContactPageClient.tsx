@@ -51,15 +51,16 @@ export default function ContactPageClient() {
 
         <div className="grid grid-cols-3 gap-3 mb-10">
           {[
-            { icon: "📧", label: "Email", value: "hello@fontsverse.app" },
-            { icon: "💬", label: "Discord", value: "discord.gg/fontsverse" },
-            { icon: "🐦", label: "Twitter", value: "@fontsverse" },
+            { icon: "📧", label: "Email", value: "hello@fontsverse.app", href: "mailto:hello@fontsverse.app" },
+            { icon: "💬", label: "Discord", value: "discord.gg/fontsverse", href: "https://discord.gg/fontsverse" },
+            { icon: "🐦", label: "Twitter", value: "@fontsverse", href: "https://twitter.com/fontsverse" },
           ].map((c) => (
-            <div key={c.label} className="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
+            <a key={c.label} href={c.href} target="_blank" rel="noopener noreferrer"
+              className="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm hover:border-amber-300 hover:shadow-md transition-all block">
               <div className="text-2xl mb-2">{c.icon}</div>
               <p className="text-gray-400 text-[10px] uppercase tracking-widest mb-1">{c.label}</p>
-              <p className="text-gray-600 text-xs font-medium">{c.value}</p>
-            </div>
+              <p className="text-amber-600 text-xs font-medium">{c.value}</p>
+            </a>
           ))}
         </div>
 

@@ -174,14 +174,14 @@ export default function HomeClient() {
       {/* ── Footer ── */}
       <footer className="relative z-10 border-t border-gray-200 py-8 px-6">
         <div className="max-w-[1100px] mx-auto flex flex-wrap justify-between items-center gap-5">
-          <span className="text-[18px] font-black bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent">FontsVerse</span>
+          <img src="/logo.svg" alt="FontsVerse" width={120} height={20} />
           <div className="flex flex-wrap gap-6">
             {["About","Contact","Privacy","Terms"].map(l => (
               <a key={l} href={`/${l.toLowerCase()}`} className="text-gray-400 hover:text-gray-600 text-xs transition-colors">{l}</a>
             ))}
           </div>
         </div>
-        <p className="text-center text-gray-300 text-[11px] mt-6">© 2026 FontsVerse · Powered by Supabase</p>
+        <p className="text-center text-gray-300 text-[11px] mt-6">© 2026 FontsVerse</p>
       </footer>
 
       {modal==="auth"       && <AuthModal onClose={close} />}

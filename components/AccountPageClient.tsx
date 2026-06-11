@@ -13,26 +13,43 @@ import AdminModal from "./AdminModal";
 
 type Modal = "auth" | "upload" | "ad" | "admin" | null;
 
+interface Project { id: string; name: string; fontIds: string[]; createdAt: string; }
+
+function loadProjects(userId: string): Project[] {
+  try { return JSON.parse(localStorage.getItem(`fv_projects_${userId}`) || "[]"); } catch { return []; }
+}
+function saveProjects(userId: string, projects: Project[]) {
+  localStorage.setItem(`fv_projects_${userId}`, JSON.stringify(projects));
+}
+
 export default function AccountPageClient() {
   const { user, profile, isAdmin, updateProfile, signOut } = useAuth();
   const { fonts, removeFont } = useUserFonts();
   const { notify } = useNotif();
   const router = useRouter();
-  const [modal, setModal] = useState<Modal>(null);
-  const [name, setName]   = useState("");
-  const [email, setEmail] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [tab, setTab]     = useState<"profile" | "fonts" | "projects">("profile");
+  const [modal, setModal]       = useState<Modal>(null);
+  const [name, setName]         = useState("");
+  const [email, setEmail]       = useState("");
+  const [saved, setSaved]       = useState(false);
+  const [tab, setTab]           = useState<"profile" | "fonts" | "projects">("profile");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [newProjName, setNewProjName] = useState("");
+  const [activeProject, setActiveProject] = useState<string | null>(null);
   const close = () => setModal(null);
 
   useEffect(() => {
     if (profile) { setName(profile.name); setEmail(profile.email); }
   }, [profile]);
 
+  useEffect(() => {
+    if (user) setProjects(loadProjects(user.id));
+  }, [user]);
+
   if (!user) return (
     <div className="min-h-screen bg-[#f5f4ff] text-gray-900 flex items-center justify-center">
       <ParticleCanvas />
       <div className="relative z-10 text-center">
+        <img src="/logo.svg" alt="FontsVerse" width={140} height={24} className="mx-auto mb-8" />
         <div className="text-5xl mb-4">🔒</div>
         <h2 className="text-xl font-bold mb-2">Sign in required</h2>
         <p className="text-gray-500 text-sm mb-6">Please sign in to view your account.</p>
@@ -49,10 +66,39 @@ export default function AccountPageClient() {
     setTimeout(() => setSaved(false), 2000);
   };
 
+  const createProject = () => {
+    const n = newProjName.trim();
+    if (!n) return;
+    const proj: Project = { id: `proj_${Date.now()}`, name: n, fontIds: [], createdAt: new Date().toISOString() };
+    const updated = [...projects, proj];
+    setProjects(updated);
+    saveProjects(user.id, updated);
+    setNewProjName("");
+    notify(`Project "${n}" created`);
+  };
+
+  const deleteProject = (id: string) => {
+    const updated = projects.filter(p => p.id !== id);
+    setProjects(updated);
+    saveProjects(user.id, updated);
+    if (activeProject === id) setActiveProject(null);
+    notify("Project deleted");
+  };
+
+  const toggleFontInProject = (projId: string, fontId: string) => {
+    const updated = projects.map(p => {
+      if (p.id !== projId) return p;
+      const has = p.fontIds.includes(fontId);
+      return { ...p, fontIds: has ? p.fontIds.filter(id => id !== fontId) : [...p.fontIds, fontId] };
+    });
+    setProjects(updated);
+    saveProjects(user.id, updated);
+  };
+
   const TABS = [
     { id: "profile",  label: "Profile" },
     { id: "fonts",    label: `My Fonts (${fonts.length})` },
-    { id: "projects", label: "Projects" },
+    { id: "projects", label: `Projects (${projects.length})` },
   ] as const;
 
   return (
@@ -63,9 +109,11 @@ export default function AccountPageClient() {
         onAdminClick={() => setModal("admin")} onAccountClick={() => {}} />
 
       <main className="relative z-10 max-w-[760px] mx-auto px-6 pt-24 pb-20">
+        {/* Profile header */}
         <div className="flex items-center gap-5 mb-8">
           <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white shrink-0
-            ${isAdmin ? "bg-gradient-to-br from-amber-400 to-orange-500" : "bg-gradient-to-br from-violet-500 to-pink-500"}`}>
+            ${isAdmin ? "bg-linear-to-br from-amber-400 to-orange-500" : ""}`}
+            style={!isAdmin ? { background: "linear-gradient(135deg,#FFB703,#FB8500)" } : {}}>
             {(profile?.name||"U")[0].toUpperCase()}
           </div>
           <div>
@@ -76,22 +124,24 @@ export default function AccountPageClient() {
             <p className="text-gray-400 text-sm">{user?.email}</p>
           </div>
           <button onClick={async () => { await signOut(); router.push("/"); }}
-            className="ml-auto px-4 py-2 rounded-lg bg-red-50 border border-red-200
-              text-red-500 hover:bg-red-100 text-sm transition-all">
+            className="ml-auto px-4 py-2 rounded-lg bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 text-sm transition-all">
             Sign Out
           </button>
         </div>
 
+        {/* Tabs */}
         <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-7 w-fit">
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
               className={`px-4 py-2 rounded-lg text-sm transition-all
-                ${tab === t.id ? "bg-violet-100 text-violet-600 font-medium" : "text-gray-400 hover:text-gray-600"}`}>
+                ${tab === t.id ? "text-white font-medium" : "text-gray-400 hover:text-gray-600"}`}
+              style={tab === t.id ? { background: "linear-gradient(135deg,#FFB703,#FB8500)" } : {}}>
               {t.label}
             </button>
           ))}
         </div>
 
+        {/* ── Profile tab ── */}
         {tab === "profile" && (
           <div className="bg-white border border-gray-200 rounded-2xl p-7 space-y-4 shadow-sm">
             <h2 className="text-lg font-bold">Account Settings</h2>
@@ -120,12 +170,15 @@ export default function AccountPageClient() {
                 <p className="text-amber-700 text-xs">👑 Admin account — <a href="/admin" className="underline">Open Admin Dashboard →</a></p>
               </div>
             )}
-            <button onClick={save} className={`fv-btn-primary w-full ${saved ? "bg-emerald-600!" : ""}`}>
+            <button onClick={save}
+              className="fv-btn-primary w-full"
+              style={saved ? { background: "#059669" } : {}}>
               {saved ? "✓ Saved" : "Save Changes"}
             </button>
           </div>
         )}
 
+        {/* ── Fonts tab ── */}
         {tab === "fonts" && (
           fonts.length === 0 ? (
             <div className="text-center py-16">
@@ -141,7 +194,7 @@ export default function AccountPageClient() {
                     <span className="text-xl font-bold" style={{ color: f.text_color }}>{f.name}</span>
                   </div>
                   <div className="px-3.5 py-2 border-t border-white/10 flex justify-between items-center">
-                    <span className="text-[10px] tracking-widest text-white/40">{f.category.toUpperCase()}</span>
+                    <span className="text-[10px] tracking-widest" style={{ color: f.text_color, opacity: 0.5 }}>{f.category.toUpperCase()}</span>
                     <div className="flex items-center gap-2">
                       <span className={`text-[10px] ${f.is_public ? "text-emerald-400" : "text-white/30"}`}>
                         {f.is_public ? "● PUBLIC" : "○ PRIVATE"}
@@ -156,11 +209,99 @@ export default function AccountPageClient() {
           )
         )}
 
+        {/* ── Projects tab ── */}
         {tab === "projects" && (
-          <div className="text-center py-16">
-            <div className="text-5xl mb-4">📁</div>
-            <p className="text-gray-400 mb-1">Projects coming soon</p>
-            <p className="text-gray-300 text-sm">Group fonts into projects for team integration.</p>
+          <div>
+            {/* Create new project */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-6 shadow-sm">
+              <h3 className="text-sm font-bold text-gray-700 mb-3">Create New Project</h3>
+              <div className="flex gap-2">
+                <input className="fv-input flex-1" placeholder="Project name…"
+                  value={newProjName} onChange={e => setNewProjName(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && createProject()} />
+                <button onClick={createProject} className="fv-btn-primary w-auto! px-5 shrink-0">Create</button>
+              </div>
+            </div>
+
+            {projects.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-5xl mb-4">📁</div>
+                <p className="text-gray-400 mb-1">No projects yet</p>
+                <p className="text-gray-300 text-sm">Create a project above to group your fonts.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {projects.map(proj => (
+                  <div key={proj.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+                    {/* Project header */}
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                      <div>
+                        <h3 className="font-bold text-gray-900">{proj.name}</h3>
+                        <p className="text-gray-400 text-xs mt-0.5">{proj.fontIds.length} font{proj.fontIds.length !== 1 ? "s" : ""}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setActiveProject(activeProject === proj.id ? null : proj.id)}
+                          className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all">
+                          {activeProject === proj.id ? "Done" : "Assign Fonts"}
+                        </button>
+                        <button onClick={() => deleteProject(proj.id)}
+                          className="text-xs px-3 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition-all">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Fonts assigned to project */}
+                    {activeProject !== proj.id && (
+                      <div className="px-5 py-4">
+                        {proj.fontIds.length === 0 ? (
+                          <p className="text-gray-300 text-sm">No fonts assigned — click "Assign Fonts" to add some.</p>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            {proj.fontIds.map(fid => {
+                              const f = fonts.find(x => x.id === fid);
+                              if (!f) return null;
+                              return (
+                                <div key={fid} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
+                                  style={{ background: f.bg_color, color: f.text_color }}>
+                                  {f.name}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Font picker */}
+                    {activeProject === proj.id && (
+                      <div className="px-5 py-4">
+                        <p className="text-xs text-gray-400 mb-3">Select fonts to add or remove from this project:</p>
+                        {fonts.length === 0 ? (
+                          <p className="text-gray-300 text-sm">Upload fonts first to assign them to projects.</p>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            {fonts.map(f => {
+                              const assigned = proj.fontIds.includes(f.id);
+                              return (
+                                <button key={f.id}
+                                  onClick={() => toggleFontInProject(proj.id, f.id)}
+                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all
+                                    ${assigned ? "border-transparent" : "border-gray-200 bg-gray-50 text-gray-600"}`}
+                                  style={assigned ? { background: f.bg_color, color: f.text_color } : {}}>
+                                  {assigned ? "✓ " : ""}{f.name}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>

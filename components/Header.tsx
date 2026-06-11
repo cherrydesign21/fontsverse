@@ -104,8 +104,8 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
             </div>
           ) : (
             <button onClick={onLoginClick}
-              className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white
-                rounded-lg px-4 py-1.5 text-[13px] font-semibold hover:opacity-85 transition-opacity ml-1">
+              className="text-white rounded-lg px-4 py-1.5 text-[13px] font-semibold hover:opacity-85 transition-opacity ml-1 cursor-pointer"
+              style={{ background: "linear-gradient(135deg,#FFB703,#FB8500)" }}>
               Sign In
             </button>
           )}

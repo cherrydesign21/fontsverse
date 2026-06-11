@@ -63,13 +63,6 @@ export default function AuthModal({ onClose }: Props) {
         ))}
       </div>
 
-      {tab === "login" && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4 text-center">
-          <p className="text-amber-700 text-[11px]">
-            👑 Admin demo: <span className="font-mono">admin@fontsverse.app</span> / <span className="font-mono">admin123</span>
-          </p>
-        </div>
-      )}
 
       {tab === "register" && (
         <input className="fv-input mb-2.5" placeholder="Full Name *"
