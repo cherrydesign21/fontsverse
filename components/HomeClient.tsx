@@ -91,7 +91,8 @@ export default function HomeClient() {
           </div>
           <h1 className="font-black leading-[1.04] tracking-[-2.5px] mb-5 text-gray-900 text-[clamp(42px,9vw,78px)]">
             Your fonts.<br />
-            <span className="bg-linear-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent"
+              style={{ backgroundImage: "linear-gradient(135deg,#8ECAE6,#219EBC,#023047,#FFB703,#FB8500)" }}>
               Everywhere.
             </span>
           </h1>
@@ -235,7 +236,7 @@ export default function HomeClient() {
         <div className="max-w-[1100px] mx-auto flex flex-wrap justify-between items-center gap-5">
           <img src="/logo.svg" alt="FontsVerse" width={120} height={20} />
           <div className="flex flex-wrap gap-6">
-            {["About","Contact","Privacy","Terms"].map(l => (
+            {["About","Pricing","Contact","Privacy","Terms"].map(l => (
               <a key={l} href={`/${l.toLowerCase()}`} className="text-gray-400 hover:text-gray-600 text-xs transition-colors">{l}</a>
             ))}
           </div>

@@ -41,6 +41,7 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
         </div>
         <nav className="flex items-center gap-1 ml-auto">
           <Link href="/about"   className="text-gray-500 hover:text-gray-900 text-[13px] px-2.5 py-1.5 rounded-md transition-colors hidden sm:block">About</Link>
+          <Link href="/pricing" className="text-gray-500 hover:text-gray-900 text-[13px] px-2.5 py-1.5 rounded-md transition-colors hidden sm:block">Pricing</Link>
           <Link href="/contact" className="text-gray-500 hover:text-gray-900 text-[13px] px-2.5 py-1.5 rounded-md transition-colors hidden sm:block">Contact</Link>
           <button onClick={onAdClick}
             className="text-[#e85d58] border border-[#e85d58]/25 bg-[#e85d58]/8

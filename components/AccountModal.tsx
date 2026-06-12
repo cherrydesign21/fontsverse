@@ -56,9 +56,13 @@ export default function AccountModal({ onClose }: Props) {
           {avatarLetter}
         </div>
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <p className="text-gray-900 font-semibold">{profile.name?.trim() || profile.email}</p>
             {isAdmin && <span className="text-[9px] bg-amber-100 text-amber-600 border border-amber-200 px-1.5 py-0.5 rounded font-bold">ADMIN</span>}
+            {profile.plan === "pro" && (
+              <span className="text-[9px] text-white px-1.5 py-0.5 rounded font-bold"
+                style={{ background: "linear-gradient(135deg,#8ECAE6,#219EBC,#023047,#FFB703,#FB8500)" }}>PRO</span>
+            )}
           </div>
           <p className="text-gray-400 text-xs">{profile.email}</p>
         </div>
@@ -98,6 +102,20 @@ export default function AccountModal({ onClose }: Props) {
               👑 Admin account · <a href="/admin" className="underline">Open full dashboard →</a>
             </p>
           </div>
+        )}
+
+        {profile.plan === "pro" ? (
+          <div className="rounded-lg px-3 py-2 text-center text-[12px] text-white font-medium"
+            style={{ background: "linear-gradient(135deg,#8ECAE6,#219EBC,#023047,#FFB703,#FB8500)" }}>
+            ★ FontsVerse Pro — embed the entire library
+          </div>
+        ) : (
+          <a href="/pricing"
+            className="block rounded-lg px-3 py-2.5 text-center text-[12px] font-semibold border-2 transition-all
+              hover:shadow-md"
+            style={{ borderImage: "linear-gradient(135deg,#FFB703,#FB8500) 1", borderColor: "#FFB703", color: "#FB8500" }}>
+            ✦ Upgrade to Pro — embed all fonts · $5/yr →
+          </a>
         )}
 
         <button onClick={save} className="fv-btn-primary w-full"

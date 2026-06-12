@@ -18,6 +18,9 @@ export interface Profile {
   name: string;
   email: string;
   role: "admin" | "user";
+  plan: "free" | "pro";
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
   avatar_url?: string;
   created_at: string;
 }
