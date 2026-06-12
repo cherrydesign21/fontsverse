@@ -23,14 +23,18 @@ function saveProjects(userId: string, projects: Project[]) {
 }
 
 export default function AccountPageClient() {
-  const { user, profile, isAdmin, updateProfile, signOut } = useAuth();
+  const { user, profile, isAdmin, updateProfile, updatePassword, signOut } = useAuth();
   const { fonts, removeFont } = useUserFonts();
   const { notify } = useNotif();
   const router = useRouter();
   const [modal, setModal]       = useState<Modal>(null);
   const [name, setName]         = useState("");
   const [email, setEmail]       = useState("");
-  const [saved, setSaved]       = useState(false);
+  const [saved, setSaved]         = useState(false);
+  const [newPass, setNewPass]     = useState("");
+  const [confPass, setConfPass]   = useState("");
+  const [passError, setPassError] = useState("");
+  const [passSaved, setPassSaved] = useState(false);
   const [tab, setTab]           = useState<"profile" | "fonts" | "projects">("profile");
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProjName, setNewProjName] = useState("");
@@ -64,6 +68,18 @@ export default function AccountPageClient() {
     updateProfile({ name: name.trim(), email: email.trim() || user.email });
     setSaved(true); notify("Profile updated ✓");
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const changePassword = async () => {
+    setPassError("");
+    if (!newPass) { setPassError("Enter a new password"); return; }
+    if (newPass.length < 6) { setPassError("Password must be at least 6 characters"); return; }
+    if (newPass !== confPass) { setPassError("Passwords do not match"); return; }
+    const result = await updatePassword(newPass);
+    if (result?.error) { setPassError(result.error); return; }
+    setNewPass(""); setConfPass("");
+    setPassSaved(true); notify("Password changed ✓");
+    setTimeout(() => setPassSaved(false), 2000);
   };
 
   const createProject = () => {
@@ -114,11 +130,11 @@ export default function AccountPageClient() {
           <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white shrink-0
             ${isAdmin ? "bg-linear-to-br from-amber-400 to-orange-500" : ""}`}
             style={!isAdmin ? { background: "linear-gradient(135deg,#FFB703,#FB8500)" } : {}}>
-            {(profile?.name||"U")[0].toUpperCase()}
+            {(profile?.name?.trim() || user?.email || "U")[0].toUpperCase()}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black">{profile?.name}</h1>
+              <h1 className="text-2xl font-black">{profile?.name?.trim() || user?.email}</h1>
               {isAdmin && <span className="text-[10px] bg-amber-100 text-amber-600 border border-amber-200 px-2 py-0.5 rounded font-bold">ADMIN</span>}
             </div>
             <p className="text-gray-400 text-sm">{user?.email}</p>
@@ -175,6 +191,25 @@ export default function AccountPageClient() {
               style={saved ? { background: "#059669" } : {}}>
               {saved ? "✓ Saved" : "Save Changes"}
             </button>
+
+            {/* Password change */}
+            <div className="border-t border-gray-100 pt-4">
+              <h3 className="text-sm font-semibold text-gray-500 mb-3">Change Password</h3>
+              <div className="space-y-2">
+                <input className="fv-input" type="password" placeholder="New password (min. 6 characters)"
+                  value={newPass} onChange={e => setNewPass(e.target.value)} />
+                <input className="fv-input" type="password" placeholder="Confirm new password"
+                  value={confPass} onChange={e => setConfPass(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && changePassword()} />
+                {passError && <p className="text-red-500 text-xs">{passError}</p>}
+                <button onClick={changePassword}
+                  className="w-full py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-600 text-sm
+                    hover:bg-gray-100 hover:border-gray-300 transition-all font-medium"
+                  style={passSaved ? { background: "#d1fae5", borderColor: "#6ee7b7", color: "#059669" } : {}}>
+                  {passSaved ? "✓ Password Updated" : "Update Password"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

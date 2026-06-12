@@ -13,6 +13,7 @@ interface AuthCtx {
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (patch: Partial<Profile>) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<{ error?: string }>;
 }
 
 const Ctx = createContext<AuthCtx>({
@@ -20,6 +21,7 @@ const Ctx = createContext<AuthCtx>({
   isAdmin: false, loading: true,
   signUp: async () => ({}), signIn: async () => ({}),
   signOut: async () => {}, updateProfile: async () => {},
+  updatePassword: async () => ({}),
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -94,12 +96,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data) setProfile(data as Profile);
   };
 
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    return error ? { error: error.message } : {};
+  };
+
   return (
     <Ctx.Provider value={{
       user, profile, session,
       isAdmin: profile?.role === "admin",
       loading,
-      signUp, signIn, signOut, updateProfile,
+      signUp, signIn, signOut, updateProfile, updatePassword,
     }}>
       {children}
     </Ctx.Provider>

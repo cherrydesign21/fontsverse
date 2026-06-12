@@ -44,6 +44,18 @@ export async function POST(req: NextRequest) {
     const bytes  = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    const PALETTES = [
+      { bg: "#f0fdf4", text: "#16a34a" },
+      { bg: "#eff6ff", text: "#2563eb" },
+      { bg: "#faf5ff", text: "#7c3aed" },
+      { bg: "#fff7ed", text: "#ea580c" },
+      { bg: "#fdf2f8", text: "#db2777" },
+      { bg: "#f0f9ff", text: "#0284c7" },
+      { bg: "#fefce8", text: "#ca8a04" },
+      { bg: "#f1f5f9", text: "#475569" },
+    ];
+    const palette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
+
     const { error: uploadError } = await supabaseAdmin.storage
       .from("fonts")
       .upload(filePath, buffer, {
@@ -72,8 +84,8 @@ export async function POST(req: NextRequest) {
         file_ttf:  ext === "ttf"   ? filePath : null,
         file_woff: ext === "woff"  ? filePath : null,
         file_woff2:ext === "woff2" ? filePath : null,
-        bg_color:   "#13132e",
-        text_color: "#a78bfa",
+        bg_color:   palette.bg,
+        text_color: palette.text,
         font_family: `'${fontName}', system-ui, sans-serif`,
         font_weight: "700",
         font_style:  "normal",
