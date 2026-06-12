@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useUserFonts } from "@/context/UserFontsContext";
 import { useNotif } from "@/context/NotifContext";
+import { DBFont } from "@/lib/supabase";
+import { PROJECT_FRAMEWORKS, ProjectFW, getProjectSnippet } from "@/lib/fonts";
 import ParticleCanvas from "./ParticleCanvas";
 import Header from "./Header";
 import AuthModal from "./AuthModal";
@@ -39,6 +41,7 @@ export default function AccountPageClient() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProjName, setNewProjName] = useState("");
   const [activeProject, setActiveProject] = useState<string | null>(null);
+  const [embedProject, setEmbedProject]   = useState<string | null>(null);
   const close = () => setModal(null);
 
   useEffect(() => {
@@ -274,9 +277,22 @@ export default function AccountPageClient() {
                         <h3 className="font-bold text-gray-900">{proj.name}</h3>
                         <p className="text-gray-400 text-xs mt-0.5">{proj.fontIds.length} font{proj.fontIds.length !== 1 ? "s" : ""}</p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {proj.fontIds.length > 0 && (
+                          <button
+                            onClick={() => {
+                              setEmbedProject(embedProject === proj.id ? null : proj.id);
+                              setActiveProject(null);
+                            }}
+                            className={`text-xs px-3 py-1.5 rounded-lg border transition-all
+                              ${embedProject === proj.id
+                                ? "border-amber-400 bg-amber-50 text-amber-700"
+                                : "border-amber-200 text-amber-600 hover:bg-amber-50"}`}>
+                            {embedProject === proj.id ? "✕ Hide Code" : "⟨/⟩ Embed Code"}
+                          </button>
+                        )}
                         <button
-                          onClick={() => setActiveProject(activeProject === proj.id ? null : proj.id)}
+                          onClick={() => { setActiveProject(activeProject === proj.id ? null : proj.id); setEmbedProject(null); }}
                           className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all">
                           {activeProject === proj.id ? "Done" : "Assign Fonts"}
                         </button>
@@ -287,8 +303,15 @@ export default function AccountPageClient() {
                       </div>
                     </div>
 
+                    {/* Embed code panel */}
+                    {embedProject === proj.id && (
+                      <ProjectEmbedPanel
+                        project={proj}
+                        fonts={fonts.filter(f => proj.fontIds.includes(f.id))} />
+                    )}
+
                     {/* Fonts assigned to project */}
-                    {activeProject !== proj.id && (
+                    {embedProject !== proj.id && activeProject !== proj.id && (
                       <div className="px-5 py-4">
                         {proj.fontIds.length === 0 ? (
                           <p className="text-gray-300 text-sm">No fonts assigned — click "Assign Fonts" to add some.</p>
@@ -345,6 +368,59 @@ export default function AccountPageClient() {
       {modal === "upload" && <UploadModal onClose={close} onAuthRequired={() => setModal("auth")} />}
       {modal === "ad"     && <AdModal onClose={close} />}
       {modal === "admin"  && <AdminModal onClose={close} />}
+    </div>
+  );
+}
+
+function ProjectEmbedPanel({ project, fonts }: { project: { name: string }; fonts: DBFont[] }) {
+  const [fw, setFw]       = useState<ProjectFW>("HTML");
+  const [copied, setCopied] = useState(false);
+
+  const code = getProjectSnippet(fw, project.name, fonts);
+
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(code); } catch {}
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="px-5 py-4 border-t border-amber-100 bg-amber-50/40">
+      <p className="text-xs font-semibold text-amber-700 mb-3">
+        Embed {fonts.length} font{fonts.length !== 1 ? "s" : ""} from "{project.name}"
+      </p>
+
+      {/* Framework tabs */}
+      <div className="flex gap-1.5 flex-wrap mb-3">
+        {PROJECT_FRAMEWORKS.map(f => (
+          <button key={f} onClick={() => { setFw(f); setCopied(false); }}
+            className={`px-2.5 py-1 rounded-md text-[11px] border transition-all
+              ${fw === f
+                ? "bg-amber-500 border-amber-500 text-white"
+                : "bg-white border-gray-200 text-gray-500 hover:border-amber-300 hover:text-amber-600"}`}>
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {/* Code block */}
+      <div className="relative">
+        <pre className="bg-gray-900 rounded-xl p-4 text-[11px] text-emerald-400 overflow-x-auto
+          leading-relaxed font-mono whitespace-pre-wrap wrap-break-word max-h-64 overflow-y-auto">
+          {code}
+        </pre>
+        <button onClick={copy}
+          className={`absolute top-2.5 right-2.5 px-2.5 py-1 rounded text-[11px] border transition-all
+            ${copied
+              ? "bg-emerald-50 border-emerald-300 text-emerald-600"
+              : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"}`}>
+          {copied ? "✓ Copied!" : "Copy"}
+        </button>
+      </div>
+
+      <p className="text-gray-400 text-[10px] mt-2">
+        These URLs are direct Supabase storage links — no external CDN required.
+      </p>
     </div>
   );
 }
