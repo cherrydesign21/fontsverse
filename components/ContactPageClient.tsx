@@ -20,11 +20,21 @@ export default function ContactPageClient() {
   const [modal, setModal] = useState<ModalType>(null);
   const [form, setForm] = useState({ name: "", email: "", topic: "General Inquiry", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending]     = useState(false);
   const close = () => setModal(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.email || !form.message) { notify("Please fill in all required fields", "error"); return; }
+    setSending(true);
+    try {
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    } catch {}
+    setSending(false);
     setSubmitted(true);
     notify("Message sent! We'll get back to you soon. ✓");
   };
@@ -96,7 +106,9 @@ export default function ContactPageClient() {
                 value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required />
             </div>
 
-            <button type="submit" className="fv-btn-primary w-full">Send Message</button>
+            <button type="submit" disabled={sending} className="fv-btn-primary w-full disabled:opacity-60">
+              {sending ? "Sending…" : "Send Message"}
+            </button>
           </form>
         ) : (
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-12 text-center">

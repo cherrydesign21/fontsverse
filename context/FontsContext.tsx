@@ -58,11 +58,11 @@ export function FontsProvider({ children }: { children: ReactNode }) {
   };
 
   const incrementDownload = async (id: string) => {
-    try {
-      await supabase.rpc("increment_downloads", { font_id: id });
-    } catch {
-      await supabase.from("download_events").insert({ font_id: id });
-    }
+    const font = fonts.find(f => f.id === id);
+    if (!font) return;
+    const newCount = (font.downloads || 0) + 1;
+    await supabase.from("fonts").update({ downloads: newCount }).eq("id", id);
+    setFonts(p => p.map(f => f.id === id ? { ...f, downloads: newCount } : f));
   };
 
   return (
