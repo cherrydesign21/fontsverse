@@ -142,8 +142,8 @@ export default function FontDetailModal({ font, onClose }: Props) {
           <div className="flex gap-1.5 flex-wrap justify-end shrink-0">
             {downloadFormats.map(({ fmt }) => (
               <button key={fmt} onClick={() => download(fmt)}
-                className="px-2.5 py-1 rounded-md text-xs border border-violet-200
-                  bg-violet-50 text-violet-600 hover:bg-violet-100 transition-all font-medium">
+                className="px-2.5 py-1 rounded-md text-xs border border-gray-200
+                  bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all font-medium">
                 ↓ {fmt.toUpperCase()}
               </button>
             ))}
@@ -155,11 +155,11 @@ export default function FontDetailModal({ font, onClose }: Props) {
       <div className="flex flex-wrap gap-1.5 mb-3">
         {FRAMEWORKS.map(f => (
           <button key={f.id} onClick={() => { setFw(f.id); setCopied(false); }}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] border transition-all
+            className={`px-2.5 py-1.5 rounded-md text-[11px] border transition-all
               ${fw === f.id
-                ? "bg-violet-50 border-violet-300 text-violet-600"
+                ? "bg-amber-50 border-amber-300 text-amber-700 font-semibold"
                 : "bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-700"}`}>
-            <span>{f.icon}</span>{f.label}
+            {f.label}
           </button>
         ))}
       </div>
@@ -173,7 +173,7 @@ export default function FontDetailModal({ font, onClose }: Props) {
           className={`absolute top-2.5 right-2.5 px-2.5 py-1 rounded text-[11px] border transition-all
             ${copied
               ? "bg-emerald-50 border-emerald-300 text-emerald-600"
-              : "bg-violet-50 border-violet-200 text-violet-600 hover:bg-violet-100"}`}>
+              : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
           {copied ? "✓ Copied!" : "Copy"}
         </button>
       </div>

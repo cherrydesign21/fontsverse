@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useFonts } from "@/context/FontsContext";
 import { useAuth } from "@/context/AuthContext";
 import { useNotif } from "@/context/NotifContext";
-import ParticleCanvas from "./ParticleCanvas";
 import Header from "./Header";
 import AuthModal from "./AuthModal";
 import UploadModal from "./UploadModal";
@@ -15,7 +14,7 @@ import AdminModal from "./AdminModal";
 type Modal = "auth"|"upload"|"ad"|"account"|"adminModal"|null;
 
 export default function AdminPageClient() {
-  const { user, isAdmin, profile } = useAuth();
+  const { user, isAdmin, profile, loading: authLoading } = useAuth();
   const { fonts, updateFont, removeFont } = useFonts();
   const { notify } = useNotif();
   const router = useRouter();
@@ -41,10 +40,15 @@ export default function AdminPageClient() {
     return matchT && matchP;
   });
 
+  if (authLoading) return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="w-7 h-7 rounded-full border-2 border-gray-200 border-t-amber-500 animate-spin" />
+    </div>
+  );
+
   if (!user) return (
-    <div className="min-h-screen bg-[#f5f4ff] text-gray-900 flex items-center justify-center">
-      <ParticleCanvas />
-      <div className="relative z-10 text-center">
+    <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center">
+      <div className="text-center">
         <img src="/logo.svg" alt="FontsVerse" width={140} height={24} className="mx-auto mb-8" />
         <div className="text-5xl mb-4">🔒</div>
         <h2 className="text-xl font-bold mb-2">Sign in required</h2>
@@ -56,9 +60,8 @@ export default function AdminPageClient() {
   );
 
   if (!isAdmin) return (
-    <div className="min-h-screen bg-[#f5f4ff] text-gray-900 flex items-center justify-center">
-      <ParticleCanvas />
-      <div className="relative z-10 text-center">
+    <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center">
+      <div className="text-center">
         <div className="text-5xl mb-4">🚫</div>
         <h2 className="text-xl font-bold mb-2">Admin Access Only</h2>
         <p className="text-gray-500 text-sm mb-6">Your account does not have admin privileges.</p>
@@ -68,13 +71,12 @@ export default function AdminPageClient() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f5f4ff] text-gray-900">
-      <ParticleCanvas />
+    <div className="min-h-screen bg-white text-gray-900">
       <Header onSearch={() => {}} onLoginClick={() => setModal("auth")}
         onUploadClick={() => setModal("upload")} onAdClick={() => setModal("ad")}
         onAdminClick={() => setModal("adminModal")} onAccountClick={() => setModal("account")} />
 
-      <main className="relative z-10 max-w-[1100px] mx-auto px-6 pt-24 pb-20">
+      <main className="max-w-[1100px] mx-auto px-6 pt-24 pb-20">
         <div className="flex flex-wrap justify-between items-start gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-1">

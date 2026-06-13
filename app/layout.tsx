@@ -6,12 +6,37 @@ import { UserFontsProvider } from "@/context/UserFontsContext";
 import { FontsProvider }     from "@/context/FontsContext";
 
 export const metadata: Metadata = {
-  title: "FontsVerse — The Open Font Platform",
-  description: "Upload, host and integrate custom fonts into any framework. Free font hosting with Supabase storage.",
+  metadataBase: new URL("https://fontsverse.vercel.app"),
+  title: {
+    default:  "FontsVerse — The Open Font Platform",
+    template: "%s — FontsVerse",
+  },
+  description:
+    "Upload, host, and integrate custom fonts into any framework. Free font hosting with embed code for HTML, CSS, React, Next.js, Vue, Angular, Flutter, and Android.",
+  keywords: [
+    "font hosting", "custom fonts", "web fonts", "font CDN",
+    "typography", "Next.js fonts", "React fonts", "open source fonts",
+    "font embed", "font upload",
+  ],
+  authors:  [{ name: "FontsVerse" }],
+  creator:  "FontsVerse",
   openGraph: {
-    title: "FontsVerse — The Open Font Platform",
-    description: "Upload, host and integrate custom fonts into any framework.",
-    type: "website",
+    title:       "FontsVerse — The Open Font Platform",
+    description: "Upload, host, and integrate custom fonts into any framework — for free.",
+    type:        "website",
+    url:         "https://fontsverse.vercel.app",
+    siteName:    "FontsVerse",
+    locale:      "en_US",
+  },
+  twitter: {
+    card:        "summary_large_image",
+    title:       "FontsVerse — The Open Font Platform",
+    description: "Upload, host, and integrate custom fonts into any framework — for free.",
+  },
+  robots: {
+    index:  true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 

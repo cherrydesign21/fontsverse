@@ -50,8 +50,8 @@ export default function AdModal({ onClose }: Props) {
 
       {!submitted ? (
         <>
-          <div className="bg-violet-50 border border-violet-200 rounded-lg px-3 py-2.5 mb-4">
-            <p className="text-violet-600 text-[12px] font-medium mb-1">📊 Ad Pricing</p>
+          <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 mb-4">
+            <p className="text-amber-700 text-[12px] font-medium mb-1">📊 Ad Pricing</p>
             <p className="text-gray-500 text-[11px]">Ads are reviewed manually. We'll contact you at your email to confirm pricing and go-live date.</p>
           </div>
 
@@ -90,7 +90,7 @@ export default function AdModal({ onClose }: Props) {
           <div className="text-5xl mb-4">🎉</div>
           <p className="text-gray-900 font-bold text-lg mb-2">Request received!</p>
           <p className="text-gray-400 text-sm mb-1">We'll review your ad and email you at</p>
-          <p className="text-violet-500 text-sm font-mono mb-5">{email}</p>
+          <p className="text-amber-600 text-sm font-mono mb-5">{email}</p>
           <p className="text-gray-300 text-xs mb-5">Usually within 24 hours</p>
           <button onClick={onClose} className="fv-btn-primary w-auto! px-8">Done</button>
         </div>

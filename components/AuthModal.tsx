@@ -57,7 +57,7 @@ export default function AuthModal({ onClose }: Props) {
         {(["login","register"] as const).map(t => (
           <button key={t} onClick={() => switchTab(t)}
             className={`flex-1 py-2 rounded-md text-[13px] font-medium transition-all
-              ${tab===t ? "bg-violet-500/20 text-violet-600" : "text-gray-400 hover:text-gray-600"}`}>
+              ${tab===t ? "bg-gray-900 text-white" : "text-gray-400 hover:text-gray-600"}`}>
             {t === "login" ? "Sign In" : "Create Account"}
           </button>
         ))}
@@ -99,7 +99,7 @@ export default function AuthModal({ onClose }: Props) {
 
       <p className="text-center text-gray-400 text-[12px] mt-3">
         {tab === "login" ? "No account? " : "Have an account? "}
-        <span className="text-violet-500 cursor-pointer hover:underline"
+        <span className="text-amber-600 cursor-pointer hover:underline"
           onClick={() => switchTab(tab==="login"?"register":"login")}>
           {tab === "login" ? "Create one free" : "Sign in"}
         </span>

@@ -220,13 +220,12 @@ export default function UploadModal({ onClose, onAuthRequired }: Props) {
 
           {/* Upload progress */}
           {uploading && (
-            <div className="bg-violet-50 border border-violet-200 rounded-lg px-4 py-3">
-              <p className="text-violet-600 text-sm font-medium">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+              <p className="text-amber-700 text-sm font-medium">
                 Uploading{files.length > 1 ? ` ${currentIdx + 1} of ${files.length}: ` : " "}{files[currentIdx]?.name}…
               </p>
-              <div className="h-1.5 bg-violet-100 rounded-full overflow-hidden mt-2">
-                <div className="h-full rounded-full animate-pulse"
-                  style={{ width: "65%", background: "linear-gradient(90deg,#7c6af7,#f72585)" }} />
+              <div className="h-1.5 bg-amber-100 rounded-full overflow-hidden mt-2">
+                <div className="h-full w-full rounded-full animate-pulse bg-amber-400" />
               </div>
             </div>
           )}

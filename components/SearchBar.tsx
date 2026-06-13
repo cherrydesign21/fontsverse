@@ -66,7 +66,7 @@ export default function SearchBar({ onSearch, compact }: Props) {
           placeholder="Search fonts…"
           className={`w-full pl-9 pr-8 rounded-lg bg-gray-100 border border-gray-200
             text-gray-900 placeholder-gray-400 outline-none transition-all
-            focus:border-violet-400/70 focus:bg-white
+            focus:border-amber-400/70 focus:bg-white
             ${compact ? "py-1.5 text-[13px]" : "py-2 text-[13px]"}`}
           autoComplete="off" spellCheck={false} />
         {query && (
@@ -90,7 +90,7 @@ export default function SearchBar({ onSearch, compact }: Props) {
               onMouseDown={e => { e.preventDefault(); pick(font.name); }}
               onMouseEnter={() => setHi(i)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors
-                ${hi===i ? "bg-violet-50" : "hover:bg-gray-50"}`}>
+                ${hi===i ? "bg-amber-50/60" : "hover:bg-gray-50"}`}>
               <div className="w-8 h-8 rounded-md shrink-0 flex items-center justify-center"
                 style={{ background: font.bg_color }}>
                 <span className="text-[11px] font-bold" style={{ color: font.text_color }}>
@@ -103,13 +103,13 @@ export default function SearchBar({ onSearch, compact }: Props) {
                 </p>
                 <p className="text-[11px] text-gray-400">{font.category}</p>
               </div>
-              <span className={`text-violet-500 text-xs transition-opacity ${hi===i?"opacity-100":"opacity-0"}`}>↵</span>
+              <span className={`text-amber-500 text-xs transition-opacity ${hi===i?"opacity-100":"opacity-0"}`}>↵</span>
             </button>
           ))}
           {query.trim() && (
             <button onMouseDown={e => { e.preventDefault(); setOpen(false); onSearch(query.trim()); }}
-              className="w-full px-3 py-2.5 text-left text-[12px] text-violet-500
-                hover:bg-violet-50 border-t border-gray-100 transition-colors">
+              className="w-full px-3 py-2.5 text-left text-[12px] text-amber-600
+                hover:bg-amber-50/40 border-t border-gray-100 transition-colors">
               See all results for &ldquo;{query}&rdquo; →
             </button>
           )}
@@ -124,5 +124,5 @@ function Hl({ text, q }: { text: string; q: string }) {
   if (!qt) return <>{text}</>;
   const i = text.toLowerCase().indexOf(qt.toLowerCase());
   if (i === -1) return <>{text}</>;
-  return <>{text.slice(0,i)}<mark className="bg-violet-100 text-violet-700 rounded-xs px-0.5 not-italic">{text.slice(i,i+qt.length)}</mark>{text.slice(i+qt.length)}</>;
+  return <>{text.slice(0,i)}<mark className="bg-amber-100 text-amber-700 rounded px-0.5 not-italic">{text.slice(i,i+qt.length)}</mark>{text.slice(i+qt.length)}</>;
 }

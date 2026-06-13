@@ -6,7 +6,6 @@ import { useUserFonts } from "@/context/UserFontsContext";
 import { useNotif } from "@/context/NotifContext";
 import { DBFont } from "@/lib/supabase";
 import { PROJECT_FRAMEWORKS, ProjectFW, getProjectSnippet } from "@/lib/fonts";
-import ParticleCanvas from "./ParticleCanvas";
 import Header from "./Header";
 import AuthModal from "./AuthModal";
 import UploadModal from "./UploadModal";
@@ -25,7 +24,7 @@ function saveProjects(userId: string, projects: Project[]) {
 }
 
 export default function AccountPageClient() {
-  const { user, profile, isAdmin, updateProfile, updatePassword, signOut } = useAuth();
+  const { user, profile, isAdmin, updateProfile, updatePassword, signOut, loading: authLoading } = useAuth();
   const { fonts, removeFont } = useUserFonts();
   const { notify } = useNotif();
   const router = useRouter();
@@ -52,10 +51,15 @@ export default function AccountPageClient() {
     if (user) setProjects(loadProjects(user.id));
   }, [user]);
 
+  if (authLoading) return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="w-7 h-7 rounded-full border-2 border-gray-200 border-t-amber-500 animate-spin" />
+    </div>
+  );
+
   if (!user) return (
-    <div className="min-h-screen bg-[#f5f4ff] text-gray-900 flex items-center justify-center">
-      <ParticleCanvas />
-      <div className="relative z-10 text-center">
+    <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center">
+      <div className="text-center">
         <img src="/logo.svg" alt="FontsVerse" width={140} height={24} className="mx-auto mb-8" />
         <div className="text-5xl mb-4">🔒</div>
         <h2 className="text-xl font-bold mb-2">Sign in required</h2>
@@ -121,13 +125,12 @@ export default function AccountPageClient() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-[#f5f4ff] text-gray-900">
-      <ParticleCanvas />
+    <div className="min-h-screen bg-white text-gray-900">
       <Header onSearch={() => {}} onLoginClick={() => setModal("auth")}
         onUploadClick={() => setModal("upload")} onAdClick={() => setModal("ad")}
         onAdminClick={() => setModal("admin")} onAccountClick={() => {}} />
 
-      <main className="relative z-10 max-w-[760px] mx-auto px-6 pt-24 pb-20">
+      <main className="max-w-[760px] mx-auto px-6 pt-24 pb-20">
         {/* Profile header */}
         <div className="flex items-center gap-5 mb-8">
           <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white shrink-0

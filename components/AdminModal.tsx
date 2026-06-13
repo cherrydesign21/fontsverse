@@ -79,7 +79,7 @@ export default function AdminModal({ onClose }: Props) {
         {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`flex-1 py-2 rounded-md text-[12px] font-medium transition-all
-              ${tab===t.id ? "bg-violet-100 text-violet-600" : "text-gray-400 hover:text-gray-600"}`}>
+              ${tab===t.id ? "bg-amber-100 text-amber-700" : "text-gray-400 hover:text-gray-600"}`}>
             {t.label}
           </button>
         ))}
@@ -144,7 +144,7 @@ export default function AdminModal({ onClose }: Props) {
                   {ad.status.toUpperCase()}
                 </span>
               </div>
-              <p className="text-violet-500 text-xs truncate mb-1">{ad.destination_url}</p>
+              <p className="text-gray-400 text-xs truncate mb-1">{ad.destination_url}</p>
               <p className="text-gray-400 text-xs mb-3">
                 {ad.contact_email} {ad.budget ? `· $${ad.budget}/mo` : ""}
                 {" · "}{new Date(ad.created_at).toLocaleDateString()}
@@ -175,7 +175,7 @@ export default function AdminModal({ onClose }: Props) {
             { val: stats.activeAds,      label: "Active Ads" },
             { val: "Supabase",           label: "Database" },
           ].map(s => (
-            <div key={s.label} className="bg-violet-50 border border-violet-100 rounded-xl p-4 text-center">
+            <div key={s.label} className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
               <p className="text-xl font-black text-gray-900">{s.val}</p>
               <p className="text-gray-400 text-xs mt-1">{s.label}</p>
             </div>

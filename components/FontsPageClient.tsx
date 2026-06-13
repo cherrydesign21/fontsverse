@@ -3,7 +3,6 @@ import { useState, useMemo, useCallback } from "react";
 import { useFonts } from "@/context/FontsContext";
 import { DBFont } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
-import ParticleCanvas from "./ParticleCanvas";
 import Header from "./Header";
 import FontCard from "./FontCard";
 import AuthModal from "./AuthModal";
@@ -39,14 +38,13 @@ export default function FontsPageClient() {
   const CATS = ["All","Sans-Serif","Serif","Monospace","Display","Condensed","Handwriting"];
 
   return (
-    <div className="min-h-screen bg-[#f5f4ff] text-gray-900">
-      <ParticleCanvas />
+    <div className="min-h-screen bg-white text-gray-900">
       <Header onSearch={handleSearch} onLoginClick={() => setModal("auth")}
         onUploadClick={() => user ? setModal("upload") : setModal("auth")}
         onAdClick={() => setModal("ad")} onAdminClick={() => setModal("admin")}
         onAccountClick={() => setModal("account")} />
 
-      <main className="relative z-10 max-w-[1160px] mx-auto px-6 pt-24 pb-20">
+      <main className="max-w-[1160px] mx-auto px-6 pt-24 pb-20">
         <h1 className="text-3xl font-black mb-2">Browse All Fonts</h1>
         <p className="text-gray-400 text-sm mb-8">
           {loading ? "Loading…" : `${filtered.length} font${filtered.length!==1?"s":""} available`}
@@ -57,8 +55,8 @@ export default function FontsPageClient() {
             <button key={c} onClick={() => setCategory(c)}
               className={`px-4 py-1.5 rounded-full text-[12px] font-medium border transition-all
                 ${category===c
-                  ? "bg-violet-500 text-white border-violet-500"
-                  : "bg-white border-gray-200 text-gray-500 hover:border-violet-400/60"}`}>
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-white border-gray-200 text-gray-500 hover:border-gray-400"}`}>
               {c}
             </button>
           ))}

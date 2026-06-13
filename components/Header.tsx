@@ -54,8 +54,9 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
               <button onClick={() => setOpen(!open)}
                 className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full
                   border border-gray-200 hover:border-gray-300 transition-all ml-1">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold text-white
-                  ${isAdmin ? "bg-gradient-to-br from-amber-400 to-orange-500" : "bg-gradient-to-br from-violet-500 to-indigo-600"}`}>
+                <div
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold text-white"
+                  style={{ background: isAdmin ? "linear-gradient(135deg,#f59e0b,#f97316)" : "linear-gradient(135deg,#219EBC,#023047)" }}>
                   {displayName[0].toUpperCase()}
                 </div>
                 {isAdmin && <span className="text-amber-500 text-[10px] font-bold tracking-wide hidden sm:block">ADMIN</span>}

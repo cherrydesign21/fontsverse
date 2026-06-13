@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNotif } from "@/context/NotifContext";
-import ParticleCanvas from "./ParticleCanvas";
 import Header from "./Header";
 import AuthModal from "./AuthModal";
 import UploadModal from "./UploadModal";
@@ -59,14 +58,13 @@ export default function PricingPageClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f4ff] text-gray-900">
-      <ParticleCanvas />
+    <div className="min-h-screen bg-white text-gray-900">
       <Header onSearch={() => {}} onLoginClick={() => setModal("auth")}
         onUploadClick={() => user ? setModal("upload") : setModal("auth")}
         onAdClick={() => setModal("ad")} onAdminClick={() => setModal("admin")}
         onAccountClick={() => setModal("account")} />
 
-      <main className="relative z-10 max-w-[900px] mx-auto px-6 pt-28 pb-24">
+      <main className="max-w-[900px] mx-auto px-6 pt-28 pb-24">
         {/* Heading */}
         <div className="text-center mb-14">
           <h1 className="text-4xl font-black tracking-tight mb-3">
