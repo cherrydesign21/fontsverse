@@ -91,15 +91,12 @@ export default function HomeClient() {
         onAdminClick={() => setModal("admin")} onAccountClick={() => setModal("account")} />
 
       {/* ── Hero ── */}
-      <section className="relative pt-[180px] pb-[100px] text-center overflow-hidden" style={{
-        background: [
-          "radial-gradient(ellipse at 15% 40%, rgba(255,183,3,0.22) 0%, transparent 50%)",
-          "radial-gradient(ellipse at 85% 15%, rgba(142,202,230,0.3)  0%, transparent 50%)",
-          "radial-gradient(ellipse at 70% 80%, rgba(251,133,0,0.18)   0%, transparent 40%)",
-          "radial-gradient(ellipse at 5%  90%, rgba(33,158,188,0.18)  0%, transparent 40%)",
-          "#fff",
-        ].join(",")
-      }}>
+      <section className="relative pt-[180px] pb-[100px] text-center overflow-hidden bg-white">
+        {/* Watercolor background */}
+        <img src="/hero-bg.png" alt="" aria-hidden
+          className="absolute inset-0 w-full h-full object-cover object-top pointer-events-none select-none"
+          style={{ opacity: 0.8 }} />
+        <div className="relative z-10">
         {/* badge */}
         <div className="inline-flex items-center gap-2 border border-[#111] rounded-full px-5 py-3 mb-10">
           <div className="w-1.5 h-1.5 rounded-full bg-[#111]" />
@@ -134,6 +131,7 @@ export default function HomeClient() {
             </svg>
           </Link>
         </div>
+        </div>{/* end relative z-10 */}
       </section>
 
       {/* ── Browse / Font Grid ── */}

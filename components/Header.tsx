@@ -30,22 +30,21 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
   const displayName = profile?.name || user?.email?.split("@")[0] || "User";
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-[60px] z-[100]
-      bg-white/95 backdrop-blur-[20px] border-b border-gray-200">
-      <div className="max-w-[1280px] mx-auto px-5 h-full flex items-center gap-4">
+    <header className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-[#e1e1e1]"
+      style={{ height: 80 }}>
+      <div className="max-w-[1440px] mx-auto px-8 h-full flex items-center gap-8">
         <Link href="/" className="shrink-0 flex items-center">
           <Image src="/logo.svg" alt="FontsVerse" width={130} height={22} priority />
         </Link>
-        <div className="flex-1 max-w-[360px]">
+        <div className="shrink-0" style={{ width: 350 }}>
           <SearchBar onSearch={onSearch} compact />
         </div>
-        <nav className="flex items-center gap-1 ml-auto">
-          <Link href="/about"   className="text-gray-500 hover:text-gray-900 text-[13px] px-2.5 py-1.5 rounded-md transition-colors hidden sm:block">About</Link>
-          <Link href="/pricing" className="text-gray-500 hover:text-gray-900 text-[13px] px-2.5 py-1.5 rounded-md transition-colors hidden sm:block">Pricing</Link>
-          <Link href="/contact" className="text-gray-500 hover:text-gray-900 text-[13px] px-2.5 py-1.5 rounded-md transition-colors hidden sm:block">Contact</Link>
+        <nav className="flex items-center gap-7 ml-auto" style={{ fontFamily: "Outfit, system-ui, sans-serif" }}>
+          <Link href="/about"   className="text-[#333] hover:text-black text-[16px] font-light transition-colors hidden md:block">About</Link>
+          <Link href="/pricing" className="text-[#333] hover:text-black text-[16px] font-light transition-colors hidden md:block">Pricing</Link>
+          <Link href="/contact" className="text-[#333] hover:text-black text-[16px] font-light transition-colors hidden md:block">Contact</Link>
           <button onClick={onAdClick}
-            className="text-[#e85d58] border border-[#e85d58]/25 bg-[#e85d58]/8
-              hover:bg-[#e85d58]/15 rounded-md px-3 py-1.5 text-[12px] transition-all">
+            className="text-[#333] hover:text-black text-[16px] font-light transition-colors hidden md:block">
             Post an Ad
           </button>
 
@@ -106,9 +105,12 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
             </div>
           ) : (
             <button onClick={onLoginClick}
-              className="text-white rounded-lg px-4 py-1.5 text-[13px] font-semibold hover:opacity-85 transition-opacity ml-1 cursor-pointer"
-              style={{ background: "linear-gradient(135deg,#FFB703,#FB8500)" }}>
-              Sign In
+              className="inline-flex items-center gap-2 px-[26px] py-[14px] rounded-[8px] text-[14px] font-semibold uppercase tracking-[1.4px] text-black hover:opacity-90 transition-opacity cursor-pointer"
+              style={{ background: "linear-gradient(114deg,#FFB703 5%,#FB8500 105%)", fontFamily: "Outfit, system-ui, sans-serif" }}>
+              Login
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path d="M1 12L12 1M12 1H5M12 1v7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </button>
           )}
         </nav>

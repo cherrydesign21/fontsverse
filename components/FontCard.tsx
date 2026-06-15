@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { DBFont } from "@/lib/supabase";
 import { getFontFaceCSS } from "@/lib/fonts";
@@ -11,22 +11,20 @@ interface Props {
 }
 
 export default function FontCard({ font, isFav = false, onToggleFav }: Props) {
-  const [hovered, setHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Lazy-inject @font-face when the card enters the viewport
+  // Lazy-inject @font-face when card enters viewport
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting) return;
-      const styleId = `fv-ff-${font.id}`;
-      if (!document.getElementById(styleId)) {
+      const id = `fv-ff-${font.id}`;
+      if (!document.getElementById(id)) {
         const css = getFontFaceCSS(font);
         if (css) {
           const s = document.createElement("style");
-          s.id = styleId;
-          s.textContent = css;
+          s.id = id; s.textContent = css;
           document.head.appendChild(s);
         }
       }
@@ -38,63 +36,78 @@ export default function FontCard({ font, isFav = false, onToggleFav }: Props) {
 
   return (
     <div ref={cardRef} className="relative group">
-      <Link href={`/fonts/${font.slug}`} className="flex flex-col rounded-2xl overflow-hidden cursor-pointer transition-all duration-300"
+      <Link
+        href={`/fonts/${font.slug}`}
+        className="block rounded-[8px] overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.02]"
         style={{
           background: font.bg_color,
           aspectRatio: "1 / 1",
-          transform: hovered ? "translateY(-6px) scale(1.02)" : "translateY(0) scale(1)",
-          boxShadow: hovered
-            ? `0 20px 48px ${font.bg_color}99`
-            : "0 2px 12px rgba(0,0,0,0.10)",
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {/* Font name rendered in its own typeface */}
-        <div className="flex-1 flex items-center justify-center px-5 py-5">
-          <span
-            className="text-center leading-tight block transition-transform duration-300"
-            style={{
-              color: font.text_color,
-              fontFamily: font.font_family,
-              fontWeight: font.font_weight,
-              fontStyle: font.font_style,
-              letterSpacing: font.letter_spacing,
-              fontSize: "clamp(18px, 3.5vw, 30px)",
-              transform: hovered ? "scale(1.05)" : "scale(1)",
-            }}
-          >
-            {font.name}
-          </span>
-        </div>
+          boxShadow: "0 2px 12px rgba(0,0,0,0.10)",
+        }}>
 
-        {/* Category + download count */}
-        <div className="px-4 pb-4 flex items-end justify-between">
+        {/* Font name — bottom-left, large, matching Figma */}
+        <span
+          className="absolute leading-none"
+          style={{
+            top: "55%",
+            left: "8%",
+            right: "5%",
+            fontSize: "clamp(28px, 6.5vw, 80px)",
+            fontFamily:    font.font_family,
+            fontWeight:    font.font_weight,
+            fontStyle:     font.font_style,
+            letterSpacing: font.letter_spacing,
+            color:         font.text_color,
+            whiteSpace:    "nowrap",
+            overflow:      "hidden",
+            textOverflow:  "ellipsis",
+          }}>
+          {font.name}
+        </span>
+
+        {/* Category — bottom */}
+        <span
+          className="absolute"
+          style={{
+            bottom:        "7%",
+            left:          "8%",
+            fontSize:      "11px",
+            letterSpacing: "1.12px",
+            textTransform: "uppercase",
+            color:         font.text_color,
+            opacity:       0.5,
+            fontFamily:    "system-ui, sans-serif",
+          }}>
+          {font.category}
+        </span>
+
+        {/* Download count — bottom right */}
+        {font.downloads > 0 && (
           <span
-            className="text-[9px] tracking-[2px] font-semibold uppercase"
-            style={{ color: font.text_color, opacity: 0.5 }}
-          >
-            {font.category}
+            className="absolute"
+            style={{
+              bottom:     "7%",
+              right:      "7%",
+              fontSize:   "10px",
+              color:      font.text_color,
+              opacity:    0.35,
+              fontFamily: "system-ui, sans-serif",
+            }}>
+            ↓ {font.downloads >= 1000 ? `${(font.downloads / 1000).toFixed(1)}k` : font.downloads}
           </span>
-          {font.downloads > 0 && (
-            <span className="text-[9px]" style={{ color: font.text_color, opacity: 0.35 }}>
-              ↓ {font.downloads >= 1000 ? `${(font.downloads / 1000).toFixed(1)}k` : font.downloads}
-            </span>
-          )}
-        </div>
+        )}
       </Link>
 
-      {/* Favorite button — 44×44px touch target, outside the Link to avoid nested interaction */}
+      {/* Fav button — outside Link so click doesn't navigate */}
       {onToggleFav && (
         <button
           onClick={e => { e.preventDefault(); onToggleFav(); }}
-          className={`absolute top-1 right-1 w-11 h-11 rounded-full flex items-center justify-center
+          className={`absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center
             transition-all duration-200 z-10
             ${isFav
               ? "bg-rose-500 text-white opacity-100"
-              : "bg-black/10 text-white/60 opacity-0 group-hover:opacity-100 hover:bg-rose-500 hover:text-white"}`}
-          aria-label={isFav ? "Remove from saved" : "Save font"}
-          title={isFav ? "Remove from saved" : "Save font"}>
+              : "bg-black/10 text-white/70 opacity-0 group-hover:opacity-100 hover:bg-rose-500 hover:text-white"}`}
+          aria-label={isFav ? "Remove from saved" : "Save font"}>
           <span className="text-[13px] leading-none">{isFav ? "♥" : "♡"}</span>
         </button>
       )}

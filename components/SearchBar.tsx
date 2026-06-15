@@ -55,19 +55,17 @@ export default function SearchBar({ onSearch, compact }: Props) {
   return (
     <div ref={containerRef} className="relative w-full">
       <div className="relative flex items-center">
-        <svg className="absolute left-3 w-3.5 h-3.5 text-gray-400 pointer-events-none"
-          fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg className="absolute left-5 w-4 h-4 text-[#999] pointer-events-none shrink-0"
+          fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
         <input ref={inputRef} value={query}
           onChange={e => handleChange(e.target.value)}
           onKeyDown={keyDown}
           onFocus={() => { if (suggestions.length > 0) setOpen(true); }}
-          placeholder="Search fonts…"
-          className={`w-full pl-9 pr-8 rounded-lg bg-gray-100 border border-gray-200
-            text-gray-900 placeholder-gray-400 outline-none transition-all
-            focus:border-amber-400/70 focus:bg-white
-            ${compact ? "py-1.5 text-[13px]" : "py-2 text-[13px]"}`}
+          placeholder="Find your font"
+          className="w-full pl-11 pr-8 h-[50px] rounded-full outline-none text-[15px] font-light text-gray-800 placeholder-[#666] transition-all focus:ring-1 focus:ring-[#FFB703]/60"
+          style={{ background: "#f9f9f9", border: "1px solid #ddd", fontFamily: "Outfit, system-ui, sans-serif" }}
           autoComplete="off" spellCheck={false} />
         {query && (
           <button onClick={clear}
