@@ -1,84 +1,369 @@
 "use client";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useFonts } from "@/context/FontsContext";
-import { DBFont } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { getFontFaceCSS } from "@/lib/fonts";
+import type { DBFont } from "@/lib/supabase";
 import Header from "./Header";
-import FontCard from "./FontCard";
 import AuthModal from "./AuthModal";
 import UploadModal from "./UploadModal";
 import AdModal from "./AdModal";
 import AccountModal from "./AccountModal";
 import AdminModal from "./AdminModal";
-import FontDetailModal from "./FontDetailModal";
 
-type Modal = "auth"|"upload"|"ad"|"account"|"admin"|"fontDetail"|null;
+type Modal  = "auth"|"upload"|"ad"|"account"|"admin"|null;
+type SortKey = "downloads"|"newest"|"az";
 
+const AMBER_GRAD = "linear-gradient(122deg, #FFB703 5%, #FB8500 105%)";
+const CATS = ["All","Sans-Serif","Serif","Monospace","Display","Condensed","Handwriting"];
+
+const CLASSIFICATION = [
+  { label: "Sans Serif", font: "system-ui, sans-serif",              cat: "Sans-Serif"  },
+  { label: "Serif",      font: "'Playfair Display', Georgia, serif",  cat: "Serif"       },
+  { label: "Slab Serif", font: "'Slabo 27px', Georgia, serif",        cat: "Display"     },
+  { label: "Script",     font: "'Dancing Script', cursive",            cat: "Handwriting" },
+  { label: "Mono",       font: "'Roboto Mono', monospace",             cat: "Monospace"   },
+  { label: "Hand",       font: "'Dancing Script', cursive",            cat: "Handwriting" },
+];
+
+/* ─── per-row component with lazy @font-face injection ─── */
+function FontListRow({
+  font, previewText, previewSize,
+}: { font: DBFont; previewText: string; previewSize: number }) {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      const id = `fv-ff-${font.id}`;
+      if (!document.getElementById(id)) {
+        const css = getFontFaceCSS(font);
+        if (css) {
+          const s = document.createElement("style");
+          s.id = id; s.textContent = css;
+          document.head.appendChild(s);
+        }
+      }
+      setReady(true);
+      obs.disconnect();
+    }, { rootMargin: "200px" });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [font.id]);
+
+  return (
+    <div ref={rowRef} className="mb-4">
+      {/* label row */}
+      <div className="flex items-center gap-3 mb-2 px-0.5">
+        <Link href={`/fonts/${font.slug}`}
+          className="text-[30px] font-normal text-[#333] hover:text-[#023047] transition-colors leading-none"
+          style={{ fontFamily: "Outfit, system-ui, sans-serif" }}>
+          {font.name}
+        </Link>
+        <div className="w-px h-3 bg-[#999] shrink-0" />
+        <span className="text-[14px] tracking-[1.12px] uppercase text-[#333]"
+          style={{ fontFamily: "system-ui, sans-serif" }}>
+          {font.category}
+        </span>
+      </div>
+
+      {/* preview card */}
+      <Link href={`/fonts/${font.slug}`} className="block">
+        <div className="bg-white rounded-[8px] h-[100px] flex items-center px-5 overflow-hidden cursor-pointer
+          hover:shadow-md transition-shadow">
+          <span style={{
+            fontFamily:    font.font_family,
+            fontWeight:    font.font_weight,
+            fontStyle:     font.font_style,
+            fontSize:      previewSize,
+            lineHeight:    1.2,
+            whiteSpace:    "nowrap",
+            display:       "block",
+            background:    "linear-gradient(to right, #111 50%, rgba(17,17,17,0) 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            opacity: ready ? 1 : 0.35,
+            transition: "opacity 0.3s",
+          }}>
+            {previewText || "The quick brown fox jumps over the lazy dog"}
+          </span>
+        </div>
+      </Link>
+
+      {/* divider */}
+      <div className="h-px bg-[#e1e1e1] mt-4" />
+    </div>
+  );
+}
+
+/* ─── main component ─── */
 export default function FontsPageClient() {
   const { fonts, loading } = useFonts();
-  const { user } = useAuth();
-  const [modal, setModal]     = useState<Modal>(null);
-  const [selectedFont, setSelectedFont] = useState<DBFont|null>(null);
-  const [query, setQuery]     = useState("");
-  const [category, setCategory] = useState("All");
-  const close = () => { setModal(null); setSelectedFont(null); };
+  const { user }           = useAuth();
+
+  const [modal, setModal]           = useState<Modal>(null);
+  const [category, setCategory]     = useState("All");
+  const [previewText, setPreviewText] = useState("Discover thoughtfully crafted products");
+  const [previewSize, setPreviewSize] = useState(40);
+  const [query, setQuery]           = useState("");
+  const [sortBy, setSortBy]         = useState<SortKey>("downloads");
+  const [showSort, setShowSort]     = useState(false);
+  const sortRef                     = useRef<HTMLDivElement>(null);
+  const close = () => setModal(null);
+
+  // close sort dropdown on outside click
+  useEffect(() => {
+    if (!showSort) return;
+    const h = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) setShowSort(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [showSort]);
+
+  // load Google Fonts for classification "H" previews
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel  = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=Playfair+Display&family=Dancing+Script&family=Roboto+Mono&family=Slabo+27px&display=swap";
+    document.head.appendChild(link);
+    return () => { try { document.head.removeChild(link); } catch {} };
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return fonts.filter(f => {
+    let list = fonts.filter(f => {
       const mq = !q || f.name.toLowerCase().includes(q) || f.category.toLowerCase().includes(q);
       const mc = category === "All" || f.category === category;
       return mq && mc;
     });
-  }, [fonts, query, category]);
+    if (sortBy === "downloads") list = [...list].sort((a,b) => b.downloads - a.downloads);
+    else if (sortBy === "newest") list = [...list].sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    else list = [...list].sort((a,b) => a.name.localeCompare(b.name));
+    return list;
+  }, [fonts, query, category, sortBy]);
 
   const handleSearch = useCallback((q: string) => setQuery(q), []);
-  const openFont = (font: DBFont) => { setSelectedFont(font); setModal("fontDetail"); };
-
-  const CATS = ["All","Sans-Serif","Serif","Monospace","Display","Condensed","Handwriting"];
+  const SORT_LABELS: [SortKey, string][] = [["downloads","Popular"],["newest","Newest"],["az","A–Z"]];
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-[#f5f5f5]" style={{ fontFamily: "Outfit, system-ui, sans-serif" }}>
       <Header onSearch={handleSearch} onLoginClick={() => setModal("auth")}
         onUploadClick={() => user ? setModal("upload") : setModal("auth")}
         onAdClick={() => setModal("ad")} onAdminClick={() => setModal("admin")}
         onAccountClick={() => setModal("account")} />
 
-      <main className="max-w-[1160px] mx-auto px-6 pt-24 pb-20">
-        <h1 className="text-3xl font-black mb-2">Browse All Fonts</h1>
-        <p className="text-gray-400 text-sm mb-8">
-          {loading ? "Loading…" : `${filtered.length} font${filtered.length!==1?"s":""} available`}
-        </p>
+      <div className="flex" style={{ paddingTop: 80, minHeight: "100vh" }}>
 
-        <div className="flex gap-2 flex-wrap mb-8">
-          {CATS.map(c => (
-            <button key={c} onClick={() => setCategory(c)}
-              className={`px-4 py-1.5 rounded-full text-[12px] font-medium border transition-all
-                ${category===c
-                  ? "bg-gray-900 text-white border-gray-900"
-                  : "bg-white border-gray-200 text-gray-500 hover:border-gray-400"}`}>
-              {c}
+        {/* ── Sidebar ── */}
+        <aside
+          className="shrink-0 overflow-y-auto"
+          style={{
+            width: 280, background: "#023047",
+            position: "sticky", top: 80,
+            height: "calc(100vh - 80px)",
+          }}>
+
+          {/* preview textarea */}
+          <div className="p-5">
+            <textarea
+              value={previewText}
+              onChange={e => setPreviewText(e.target.value)}
+              placeholder="Type Something..."
+              rows={3}
+              className="w-full text-[16px] font-light resize-none outline-none placeholder:text-white/50 leading-[20px] rounded-[6px] p-4"
+              style={{
+                fontFamily: "Outfit, system-ui, sans-serif",
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                color: "#fff",
+              }}
+            />
+          </div>
+
+          {/* font size */}
+          <div className="px-5 pb-5 flex items-center gap-3">
+            <div className="flex items-center justify-center rounded-[6px] h-10 px-3 shrink-0"
+              style={{ width: 95, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <span className="text-white text-[16px] font-light">{previewSize}px</span>
+            </div>
+            <input type="range" min={12} max={96} value={previewSize}
+              onChange={e => setPreviewSize(Number(e.target.value))}
+              className="flex-1" style={{ accentColor: "#fff" }} />
+          </div>
+
+          <div className="h-px bg-white/20" />
+
+          {/* Filter — Language */}
+          <div className="p-5">
+            <p className="text-white text-[16px] font-light mb-4">Filter</p>
+            <button className="w-full flex items-center gap-3 h-10 rounded-[6px] px-4 text-white text-[16px] font-light text-left"
+              style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M1 2.5h12M3 7h8M5 11.5h4" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              Language
             </button>
-          ))}
+          </div>
+
+          <div className="h-px bg-white/20" />
+
+          {/* Font Technology */}
+          <div className="p-5">
+            <p className="text-white text-[16px] font-light mb-4">Font Technology</p>
+            <button className="w-full flex items-center gap-3 h-10 rounded-[6px] px-4 text-white text-[16px] font-light text-left"
+              style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <svg width="19" height="14" viewBox="0 0 19 14" fill="none">
+                <path d="M1 2h17M4 7h11M7 12h5" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              Variable Fonts
+            </button>
+          </div>
+
+          <div className="h-px bg-white/20" />
+
+          {/* Classification */}
+          <div className="p-5 pb-8">
+            <p className="text-white text-[16px] font-light mb-5">Classification</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "9px 9px", rowGap: 30 }}>
+              {CLASSIFICATION.map(cls => (
+                <button key={cls.label} onClick={() => setCategory(cls.cat)}
+                  className="flex flex-col items-center gap-2.5">
+                  <div className="w-full h-10 flex items-center justify-center rounded-[6px] transition-all"
+                    style={{
+                      background: category === cls.cat ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.1)",
+                      border:     category === cls.cat ? "1px solid rgba(255,255,255,0.7)" : "1px solid rgba(255,255,255,0.2)",
+                    }}>
+                    <span className="text-white text-[18px]" style={{ fontFamily: cls.font }}>H</span>
+                  </div>
+                  <span className="text-white text-[13px] text-center leading-tight" style={{ fontFamily: "Outfit, system-ui, sans-serif" }}>
+                    {cls.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* ── Main content ── */}
+        <main className="flex-1 min-w-0 px-6 py-6">
+
+          {/* Top filter + sort */}
+          <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
+            <div className="flex gap-2 flex-wrap">
+              {CATS.map(cat => (
+                <button key={cat} onClick={() => setCategory(cat)}
+                  className="px-5 py-3 rounded-[6px] text-[16px] border transition-all"
+                  style={{
+                    background:  category === cat ? "#023047" : "transparent",
+                    color:       category === cat ? "#fff"    : "#666",
+                    borderColor: "#023047",
+                  }}>
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-2 shrink-0 relative" ref={sortRef}>
+              <button onClick={() => setShowSort(!showSort)}
+                className="flex items-center gap-2 h-10 rounded-[6px] border border-[#999] text-[#666] text-[16px] font-light bg-white px-[18px]">
+                <svg width="19" height="11" viewBox="0 0 19 11" fill="none">
+                  <path d="M1 1h17M4 5.5h11M7.5 10h4" stroke="#666" strokeWidth="1.2" strokeLinecap="round"/>
+                </svg>
+                Sorting
+              </button>
+              {showSort && (
+                <div className="absolute top-11 right-[calc(100%-120px)] bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1 min-w-[130px]">
+                  {SORT_LABELS.map(([key, label]) => (
+                    <button key={key} onClick={() => { setSortBy(key); setShowSort(false); }}
+                      className={`w-full text-left px-4 py-2 text-[14px] hover:bg-gray-50 transition-colors ${sortBy===key?"text-[#023047] font-semibold":"text-[#333]"}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <button className="flex items-center gap-2 h-10 rounded-[6px] border border-[#999] text-[#666] text-[16px] font-light bg-white px-[18px]">
+                <svg width="17" height="14" viewBox="0 0 17 14" fill="none">
+                  <path d="M1 2h15M1 7h10M1 12h6" stroke="#666" strokeWidth="1.2" strokeLinecap="round"/>
+                </svg>
+                Filter
+              </button>
+            </div>
+          </div>
+
+          {/* Font list */}
+          {loading ? (
+            <div className="space-y-6">
+              {Array.from({length: 6}).map((_,i) => (
+                <div key={i}>
+                  <div className="h-5 bg-gray-200 rounded w-48 mb-2 animate-pulse" />
+                  <div className="h-[100px] bg-white rounded-[8px] animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-24">
+              <p className="text-gray-400 mb-3">No fonts match your selection</p>
+              <button onClick={() => setCategory("All")}
+                className="text-sm text-[#023047] underline underline-offset-2">
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            filtered.map(font => (
+              <FontListRow key={font.id} font={font} previewText={previewText} previewSize={previewSize} />
+            ))
+          )}
+        </main>
+      </div>
+
+      {/* ── Footer ── */}
+      <footer className="bg-white py-16 px-6">
+        <div className="max-w-290 mx-auto">
+          <div className="flex justify-between gap-12 mb-12 flex-wrap">
+            <div style={{ maxWidth: 440 }}>
+              <img src="/logo.svg" alt="FontsVerse" width={130} height={30} className="mb-8" />
+              <p className="text-[16px] leading-[26px] text-[#666]">
+                FontsVerse was built to give designers and developers a fast, framework-agnostic way to host, manage, and integrate custom typography — without vendor lock-in.
+              </p>
+            </div>
+            <div className="flex gap-[100px] flex-wrap">
+              <div>
+                <p className="text-[18px] font-medium tracking-[1.8px] uppercase text-[#FB8500] mb-10">Browse</p>
+                <div className="flex flex-col gap-5 text-[16px] font-light text-[#333]">
+                  <Link href="/fonts"   className="hover:text-[#023047] transition-colors">Fonts</Link>
+                  <span className="text-gray-300">Font packs</span>
+                  <span className="text-gray-300">Collections</span>
+                  <span className="text-gray-300">Designers</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-[18px] font-medium tracking-[1.8px] uppercase text-[#FB8500] mb-10">Support</p>
+                <div className="flex flex-col gap-5 text-[16px] font-light text-[#333]">
+                  <span className="text-gray-300">Help</span>
+                  <Link href="/contact" className="hover:text-[#023047] transition-colors">Contact</Link>
+                  <Link href="/contact" className="hover:text-[#023047] transition-colors">Send us Feedback</Link>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-[#e1e1e1] pt-8 flex justify-between items-center flex-wrap gap-3 text-[16px] font-light text-[#666]">
+            <span>Copyright©2026 FontsVerse</span>
+            <span>Privacy policy | All rights reserved</span>
+          </div>
         </div>
+      </footer>
 
-        {loading ? (
-          <div className="grid gap-3.5" style={{ gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))" }}>
-            {Array.from({length:12}).map((_,i) => <div key={i} className="rounded-xl bg-gray-200 animate-pulse min-h-[160px]" />)}
-          </div>
-        ) : (
-          <div className="grid gap-3.5" style={{ gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))" }}>
-            {filtered.map(font => <FontCard key={font.id} font={font} onClick={openFont} />)}
-          </div>
-        )}
-      </main>
-
-      {modal==="auth"       && <AuthModal onClose={close} />}
-      {modal==="upload"     && <UploadModal onClose={close} onAuthRequired={() => setModal("auth")} />}
-      {modal==="ad"         && <AdModal onClose={close} />}
-      {modal==="account"    && <AccountModal onClose={close} />}
-      {modal==="admin"      && <AdminModal onClose={close} />}
-      {modal==="fontDetail" && selectedFont && <FontDetailModal font={selectedFont} onClose={close} />}
+      {modal==="auth"    && <AuthModal onClose={close} />}
+      {modal==="upload"  && <UploadModal onClose={close} onAuthRequired={() => setModal("auth")} />}
+      {modal==="ad"      && <AdModal onClose={close} />}
+      {modal==="account" && <AccountModal onClose={close} />}
+      {modal==="admin"   && <AdminModal onClose={close} />}
     </div>
   );
 }
