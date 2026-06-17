@@ -9,6 +9,7 @@ import AccountModal from "./AccountModal";
 import AdminModal from "./AdminModal";
 import { useAuth } from "@/context/AuthContext";
 import { useNotif } from "@/context/NotifContext";
+import Reveal from "./Reveal";
 
 type ModalType = "auth" | "upload" | "ad" | "account" | "admin" | null;
 
@@ -51,16 +52,19 @@ export default function ContactPageClient() {
       />
 
       <main className="max-w-[640px] mx-auto px-6 pt-28 pb-20">
-        <div className="mb-10">
-          <p className="text-[13px] font-semibold tracking-[3px] uppercase text-gray-400 mb-4">Get in Touch</p>
-          <h1 className="text-4xl font-black tracking-tight mb-3">We&apos;d love to hear from you</h1>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            Bug report, partnership inquiry, or just want to say hello — use the form below.
-            We typically respond within 24 hours.
-          </p>
-        </div>
+        <Reveal animation="up" delay={0}>
+          <div className="mb-10">
+            <p className="text-[13px] font-semibold tracking-[3px] uppercase text-gray-400 mb-4">Get in Touch</p>
+            <h1 className="text-4xl font-black tracking-tight mb-3">We&apos;d love to hear from you</h1>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              Bug report, partnership inquiry, or just want to say hello — use the form below.
+              We typically respond within 24 hours.
+            </p>
+          </div>
+        </Reveal>
 
         {!submitted ? (
+          <Reveal animation="up" delay={120}>
           <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-7 space-y-4 shadow-sm">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -94,6 +98,7 @@ export default function ContactPageClient() {
               {sending ? "Sending…" : "Send Message"}
             </button>
           </form>
+          </Reveal>
         ) : (
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-12 text-center">
             <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-5">

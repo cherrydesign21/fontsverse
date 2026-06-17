@@ -13,6 +13,7 @@ import AdModal from "@/components/AdModal";
 import AccountModal from "@/components/AccountModal";
 import AdminModal from "@/components/AdminModal";
 import Footer from "@/components/Footer";
+import Reveal from "@/components/Reveal";
 
 type ModalType = "auth"|"upload"|"ad"|"account"|"admin"|null;
 type SortKey   = "downloads"|"newest"|"az";
@@ -99,22 +100,29 @@ export default function HomeClient() {
           style={{ opacity: 0.8 }} />
         <div className="relative z-10">
         {/* badge */}
-        <div className="inline-flex items-center gap-2 border border-[#111] rounded-full px-5 py-3 mb-10">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#111]" />
-          <span className="text-[16px] font-semibold tracking-[1.6px] uppercase text-[#111]">
-            Open Font Platform
-          </span>
-        </div>
+        <Reveal animation="up" delay={0}>
+          <div className="inline-flex items-center gap-2 border border-[#111] rounded-full px-5 py-3 mb-10">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#111]" />
+            <span className="text-[16px] font-semibold tracking-[1.6px] uppercase text-[#111]">
+              Open Font Platform
+            </span>
+          </div>
+        </Reveal>
 
-        <h1 className="font-bold leading-none text-[#111] mb-[45px]"
-          style={{ fontSize: "clamp(48px,7vw,80px)" }}>
-          Fonts that work<br />everywhere.
-        </h1>
+        <Reveal animation="up" delay={120}>
+          <h1 className="font-bold leading-none text-[#111] mb-[45px]"
+            style={{ fontSize: "clamp(48px,7vw,80px)" }}>
+            Fonts that work<br />everywhere.
+          </h1>
+        </Reveal>
 
-        <p className="text-[20px] leading-[30px] text-[#333] mb-[60px] mx-auto max-w-[540px]">
-          Upload and host your own fonts. Get integration code for any framework in seconds.
-        </p>
+        <Reveal animation="up" delay={220}>
+          <p className="text-[20px] leading-[30px] text-[#333] mb-[60px] mx-auto max-w-[540px]">
+            Upload and host your own fonts. Get integration code for any framework in seconds.
+          </p>
+        </Reveal>
 
+        <Reveal animation="up" delay={320}>
         <div className="flex items-center gap-4 justify-center flex-wrap">
           <button onClick={handleUpload}
             className="inline-flex items-center gap-2 px-[30px] py-[18px] rounded-[8px] text-[14px] font-semibold uppercase tracking-[1.4px] text-black transition-all hover:scale-[1.03] hover:shadow-lg"
@@ -132,6 +140,7 @@ export default function HomeClient() {
             </svg>
           </Link>
         </div>
+        </Reveal>
         </div>{/* end relative z-10 */}
       </section>
 
@@ -139,6 +148,7 @@ export default function HomeClient() {
       <section id="browse" className="max-w-[1280px] mx-auto px-6 py-16">
 
         {/* Filter + Sort bar */}
+        <Reveal animation="up" delay={0}>
         <div className="flex items-start justify-between gap-4 mb-10 flex-wrap">
           <div className="flex gap-2 flex-wrap">
             {CATS.map(cat => (
@@ -183,6 +193,7 @@ export default function HomeClient() {
             )}
           </div>
         </div>
+        </Reveal>
 
         {/* Grid */}
         {loading ? (
@@ -193,9 +204,11 @@ export default function HomeClient() {
           </div>
         ) : filtered.length > 0 ? (
           <div className="grid gap-[30px]" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))" }}>
-            {filtered.map(font => (
-              <FontCard key={font.id} font={font}
-                isFav={favs.includes(font.id)} onToggleFav={() => toggleFav(font.id)} />
+            {filtered.map((font, i) => (
+              <Reveal key={font.id} animation="up" delay={Math.min(i, 7) * 70}>
+                <FontCard font={font}
+                  isFav={favs.includes(font.id)} onToggleFav={() => toggleFav(font.id)} />
+              </Reveal>
             ))}
           </div>
         ) : (
@@ -218,19 +231,23 @@ export default function HomeClient() {
       {newest.length > 0 && (
         <section className="py-16" style={{ background: "#f3f3f3" }}>
           <div className="max-w-[1280px] mx-auto px-6">
-            <div className="flex items-end justify-between mb-12">
-              <div>
-                <p className="text-[26px] font-light text-[#023047] mb-2">New Release</p>
-                <div className="w-10 h-px bg-[#023047]" />
+            <Reveal animation="left">
+              <div className="flex items-end justify-between mb-12">
+                <div>
+                  <p className="text-[26px] font-light text-[#023047] mb-2">New Release</p>
+                  <div className="w-10 h-px bg-[#023047]" />
+                </div>
+                <Link href="/fonts" className="text-[18px] font-light text-[#777] hover:text-[#023047] transition-colors">
+                  View all
+                </Link>
               </div>
-              <Link href="/fonts" className="text-[18px] font-light text-[#777] hover:text-[#023047] transition-colors">
-                View all
-              </Link>
-            </div>
+            </Reveal>
             <div className="grid gap-[30px]" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))" }}>
-              {newest.map(font => (
-                <FontCard key={font.id} font={font}
-                  isFav={favs.includes(font.id)} onToggleFav={() => toggleFav(font.id)} />
+              {newest.map((font, i) => (
+                <Reveal key={font.id} animation="up" delay={Math.min(i, 7) * 70}>
+                  <FontCard font={font}
+                    isFav={favs.includes(font.id)} onToggleFav={() => toggleFav(font.id)} />
+                </Reveal>
               ))}
             </div>
           </div>
@@ -281,21 +298,27 @@ export default function HomeClient() {
 
         <div className="relative z-10 max-w-[1280px] mx-auto px-6">
           <div className="max-w-[600px]">
-            <h2 className="font-semibold text-white mb-[45px]"
-              style={{ fontSize: "clamp(40px,6vw,80px)", lineHeight: 1 }}>
-              Over {dbFonts.length > 10 ? `${dbFonts.length}+` : "1,000+"} fonts
-            </h2>
-            <p className="text-[20px] leading-[30px] mb-[60px]" style={{ color: "rgba(255,255,255,0.8)" }}>
-              Still haven't found what you are looking for? Quickly find the fonts you need with our classification and language support filters.
-            </p>
-            <Link href="/fonts"
-              className="inline-flex items-center gap-2 px-[30px] py-[18px] rounded-[8px] text-[14px] font-semibold uppercase tracking-[1.4px] text-black transition-opacity hover:opacity-90"
-              style={{ backgroundImage: AMBER_GRAD }}>
-              Browse Fonts
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </Link>
+            <Reveal animation="up" delay={0}>
+              <h2 className="font-semibold text-white mb-[45px]"
+                style={{ fontSize: "clamp(40px,6vw,80px)", lineHeight: 1 }}>
+                Over {dbFonts.length > 10 ? `${dbFonts.length}+` : "1,000+"} fonts
+              </h2>
+            </Reveal>
+            <Reveal animation="up" delay={120}>
+              <p className="text-[20px] leading-[30px] mb-[60px]" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Still haven't found what you are looking for? Quickly find the fonts you need with our classification and language support filters.
+              </p>
+            </Reveal>
+            <Reveal animation="up" delay={220}>
+              <Link href="/fonts"
+                className="inline-flex items-center gap-2 px-[30px] py-[18px] rounded-[8px] text-[14px] font-semibold uppercase tracking-[1.4px] text-black transition-opacity hover:opacity-90"
+                style={{ backgroundImage: AMBER_GRAD }}>
+                Browse Fonts
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
+            </Reveal>
           </div>
         </div>
       </section>

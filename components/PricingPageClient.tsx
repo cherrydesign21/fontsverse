@@ -9,6 +9,7 @@ import UploadModal from "./UploadModal";
 import AdModal from "./AdModal";
 import AccountModal from "./AccountModal";
 import AdminModal from "./AdminModal";
+import Reveal from "./Reveal";
 
 type Modal = "auth" | "upload" | "ad" | "account" | "admin" | null;
 
@@ -87,22 +88,25 @@ export default function PricingPageClient() {
 
       <main className="max-w-[900px] mx-auto px-6 pt-28 pb-24">
         {/* Heading */}
-        <div className="text-center mb-14">
-          <h1 className="text-4xl font-black tracking-tight mb-3">
-            Simple,{" "}
-            <span className="bg-clip-text text-transparent" style={{ backgroundImage: LOGO_GRADIENT }}>
-              honest pricing
-            </span>
-          </h1>
-          <p className="text-gray-500 text-sm leading-relaxed max-w-md mx-auto">
-            FontsVerse is free to use. Upgrade to Pro to embed the entire font library in any project.
-          </p>
-        </div>
+        <Reveal animation="up" delay={0}>
+          <div className="text-center mb-14">
+            <h1 className="text-4xl font-black tracking-tight mb-3">
+              Simple,{" "}
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: LOGO_GRADIENT }}>
+                honest pricing
+              </span>
+            </h1>
+            <p className="text-gray-500 text-sm leading-relaxed max-w-md mx-auto">
+              FontsVerse is free to use. Upgrade to Pro to embed the entire font library in any project.
+            </p>
+          </div>
+        </Reveal>
 
         {/* Plan cards */}
         <div className="grid sm:grid-cols-2 gap-6 max-w-[700px] mx-auto">
 
           {/* Free */}
+          <Reveal animation="up" delay={80}>
           <div className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm">
             <div className="mb-6">
               <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold mb-2">Free</p>
@@ -124,8 +128,10 @@ export default function PricingPageClient() {
               Current Plan
             </button>
           </div>
+          </Reveal>
 
           {/* Pro */}
+          <Reveal animation="up" delay={180}>
           <div className="rounded-2xl p-[2px] shadow-lg" style={{ background: LOGO_GRADIENT }}>
             <div className="bg-white rounded-[14px] p-7 h-full flex flex-col">
               <div className="mb-6">
@@ -165,14 +171,18 @@ export default function PricingPageClient() {
               )}
             </div>
           </div>
+          </Reveal>
         </div>
 
         {/* FAQ accordion */}
         <div className="mt-16 max-w-[600px] mx-auto">
-          <h2 className="text-lg font-bold text-center mb-8 text-gray-700">Common questions</h2>
+          <Reveal animation="up" delay={0}>
+            <h2 className="text-lg font-bold text-center mb-8 text-gray-700">Common questions</h2>
+          </Reveal>
           <div className="space-y-3">
             {FAQS.map((item, i) => (
-              <div key={item.q} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <Reveal key={item.q} animation="up" delay={i * 80}>
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className="w-full flex items-center justify-between px-5 py-4 text-left">
@@ -185,6 +195,7 @@ export default function PricingPageClient() {
                   </div>
                 )}
               </div>
+              </Reveal>
             ))}
           </div>
         </div>

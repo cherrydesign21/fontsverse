@@ -8,6 +8,7 @@ import AdModal from "./AdModal";
 import AccountModal from "./AccountModal";
 import AdminModal from "./AdminModal";
 import { useAuth } from "@/context/AuthContext";
+import Reveal from "./Reveal";
 
 type ModalType = "auth" | "upload" | "ad" | "account" | "admin" | null;
 
@@ -48,71 +49,85 @@ export default function AboutPageClient() {
 
         {/* Hero */}
         <div className="mb-20">
-          <p className="text-[13px] font-semibold tracking-[3px] uppercase text-gray-400 mb-6">Our Story</p>
-          <h1 className="text-5xl font-black tracking-tight mb-5">
-            Fonts for the{" "}
-            <span className="bg-clip-text text-transparent"
-              style={{ backgroundImage: "linear-gradient(135deg,#8ECAE6,#219EBC,#023047,#FFB703,#FB8500)" }}>
-              open web
-            </span>
-          </h1>
-          <p className="text-gray-500 text-lg leading-relaxed max-w-[600px]">
-            FontsVerse was built to give designers and developers a fast, framework-agnostic way
-            to host, manage, and integrate custom typography — without vendor lock-in.
-          </p>
+          <Reveal animation="left" delay={0}>
+            <p className="text-[13px] font-semibold tracking-[3px] uppercase text-gray-400 mb-6">Our Story</p>
+          </Reveal>
+          <Reveal animation="up" delay={100}>
+            <h1 className="text-5xl font-black tracking-tight mb-5">
+              Fonts for the{" "}
+              <span className="bg-clip-text text-transparent"
+                style={{ backgroundImage: "linear-gradient(135deg,#8ECAE6,#219EBC,#023047,#FFB703,#FB8500)" }}>
+                open web
+              </span>
+            </h1>
+          </Reveal>
+          <Reveal animation="up" delay={200}>
+            <p className="text-gray-500 text-lg leading-relaxed max-w-[600px]">
+              FontsVerse was built to give designers and developers a fast, framework-agnostic way
+              to host, manage, and integrate custom typography — without vendor lock-in.
+            </p>
+          </Reveal>
         </div>
 
         {/* Real stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-20">
-          {STATS.map((s) => (
-            <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-5 text-center shadow-sm">
-              <p className="text-3xl font-black text-gray-900 mb-1">{s.val}</p>
-              <p className="text-gray-400 text-xs">{s.label}</p>
-            </div>
+          {STATS.map((s, i) => (
+            <Reveal key={s.label} animation="up" delay={i * 80}>
+              <div className="bg-white border border-gray-200 rounded-xl p-5 text-center shadow-sm">
+                <p className="text-3xl font-black text-gray-900 mb-1">{s.val}</p>
+                <p className="text-gray-400 text-xs">{s.label}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
 
         {/* Mission */}
-        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 mb-16">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">What FontsVerse does</h2>
-          <p className="text-gray-500 leading-relaxed mb-4">
-            Typography is one of the most powerful design tools, yet hosting custom fonts remains
-            fragmented. FontsVerse solves this with a single platform where you upload once and
-            get working embed code for any framework — HTML, CSS, React, Next.js, Vue, Angular,
-            Flutter, and Android.
-          </p>
-          <p className="text-gray-500 leading-relaxed">
-            Fonts are stored in your original format and served directly from Supabase Storage.
-            No lock-in, no tracking in the delivery path, and the embed code always points to
-            your actual file URL.
-          </p>
-        </div>
+        <Reveal animation="up" delay={0}>
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 mb-16">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">What FontsVerse does</h2>
+            <p className="text-gray-500 leading-relaxed mb-4">
+              Typography is one of the most powerful design tools, yet hosting custom fonts remains
+              fragmented. FontsVerse solves this with a single platform where you upload once and
+              get working embed code for any framework — HTML, CSS, React, Next.js, Vue, Angular,
+              Flutter, and Android.
+            </p>
+            <p className="text-gray-500 leading-relaxed">
+              Fonts are stored in your original format and served directly from Supabase Storage.
+              No lock-in, no tracking in the delivery path, and the embed code always points to
+              your actual file URL.
+            </p>
+          </div>
+        </Reveal>
 
         {/* Honest builder section */}
-        <div className="mb-16 border border-gray-100 rounded-2xl p-8">
-          <h2 className="text-2xl font-bold mb-4">Built independently</h2>
-          <p className="text-gray-500 leading-relaxed">
-            FontsVerse is an independent project — not a corporate product or a funded startup.
-            It exists because the problem of hosting and integrating custom fonts is genuinely
-            annoying to solve, and nothing out there felt right. If it's useful to you, that's
-            the whole point.
-          </p>
-          <p className="text-gray-400 text-sm mt-4">
-            Have feedback or a bug to report?{" "}
-            <a href="/contact" className="text-amber-600 hover:underline">Reach out →</a>
-          </p>
-        </div>
+        <Reveal animation="up" delay={0}>
+          <div className="mb-16 border border-gray-100 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold mb-4">Built independently</h2>
+            <p className="text-gray-500 leading-relaxed">
+              FontsVerse is an independent project — not a corporate product or a funded startup.
+              It exists because the problem of hosting and integrating custom fonts is genuinely
+              annoying to solve, and nothing out there felt right. If it's useful to you, that's
+              the whole point.
+            </p>
+            <p className="text-gray-400 text-sm mt-4">
+              Have feedback or a bug to report?{" "}
+              <a href="/contact" className="text-amber-600 hover:underline">Reach out →</a>
+            </p>
+          </div>
+        </Reveal>
 
         {/* CTA */}
-        <div className="text-center border border-gray-200 rounded-2xl p-10 bg-white shadow-sm">
-          <h2 className="text-2xl font-bold mb-3">Start hosting your fonts today</h2>
-          <p className="text-gray-400 text-sm mb-6">Free forever for public fonts. No credit card required.</p>
-          <a href="/"
-            className="inline-block text-white px-8 py-3 rounded-xl font-semibold text-sm hover:opacity-85 transition-opacity"
-            style={{ background: "linear-gradient(135deg,#FFB703,#FB8500)" }}>
-            Browse Fonts →
-          </a>
-        </div>
+        <Reveal animation="scale" delay={0}>
+          <div className="text-center border border-gray-200 rounded-2xl p-10 bg-white shadow-sm">
+            <h2 className="text-2xl font-bold mb-3">Start hosting your fonts today</h2>
+            <p className="text-gray-400 text-sm mb-6">Free forever for public fonts. No credit card required.</p>
+            <a href="/"
+              className="inline-block text-white px-8 py-3 rounded-xl font-semibold text-sm hover:opacity-85 transition-opacity"
+              style={{ background: "linear-gradient(135deg,#FFB703,#FB8500)" }}>
+              Browse Fonts →
+            </a>
+          </div>
+        </Reveal>
       </main>
 
       <Footer />
