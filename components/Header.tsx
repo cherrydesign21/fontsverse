@@ -38,17 +38,27 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
         <Link href="/" className="shrink-0 flex items-center">
           <Image src="/logo.svg" alt="FontsVerse" width={130} height={22} priority />
         </Link>
-        <div className="absolute left-1/2 -translate-x-1/2" style={{ width: 520 }}>
+        <div className="absolute" style={{ width: 400, left: "calc(50% - 60px)", transform: "translateX(-50%)" }}>
           <SearchBar onSearch={onSearch} compact />
         </div>
         <nav className="flex items-center gap-7 ml-auto" style={{ fontFamily: "Outfit, system-ui, sans-serif" }}>
-          <Link href="/about"   className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">About</Link>
-          <Link href="/pricing" className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Pricing</Link>
-          <Link href="/contact" className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Contact</Link>
-          <button onClick={onAdClick}
-            className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">
-            Post an Ad
-          </button>
+          {isAdmin ? (
+            <>
+              <Link href="/admin"  className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Dashboard</Link>
+              <Link href="/fonts"  className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Browse</Link>
+              <Link href="/packs"  className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Packs</Link>
+            </>
+          ) : (
+            <>
+              <Link href="/about"   className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">About</Link>
+              <Link href="/pricing" className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Pricing</Link>
+              <Link href="/contact" className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Contact</Link>
+              <button onClick={onAdClick}
+                className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">
+                Post an Ad
+              </button>
+            </>
+          )}
 
           {user ? (
             <div className="relative" ref={ref}>
