@@ -12,6 +12,7 @@ import UploadModal from "@/components/UploadModal";
 import AdModal from "@/components/AdModal";
 import AccountModal from "@/components/AccountModal";
 import AdminModal from "@/components/AdminModal";
+import Footer from "@/components/Footer";
 
 type ModalType = "auth"|"upload"|"ad"|"account"|"admin"|null;
 type SortKey   = "downloads"|"newest"|"az";
@@ -105,7 +106,7 @@ export default function HomeClient() {
           </span>
         </div>
 
-        <h1 className="font-semibold leading-none text-[#111] mb-[45px]"
+        <h1 className="font-bold leading-none text-[#111] mb-[45px]"
           style={{ fontSize: "clamp(48px,7vw,80px)" }}>
           Fonts that work<br />everywhere.
         </h1>
@@ -116,9 +117,9 @@ export default function HomeClient() {
 
         <div className="flex items-center gap-4 justify-center flex-wrap">
           <button onClick={handleUpload}
-            className="inline-flex items-center gap-2 px-[30px] py-[18px] rounded-[8px] text-[14px] font-semibold uppercase tracking-[1.4px] text-black transition-opacity hover:opacity-90"
+            className="inline-flex items-center gap-2 px-[30px] py-[18px] rounded-[8px] text-[14px] font-semibold uppercase tracking-[1.4px] text-black transition-all hover:scale-[1.03] hover:shadow-lg"
             style={{ backgroundImage: AMBER_GRAD }}>
-            Upload a Font
+            Upload Fonts
             <svg width="18" height="16" viewBox="0 0 18 16" fill="none">
               <path d="M9 11V2M9 2L5 6M9 2l4 4M2 13h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -299,46 +300,7 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="bg-white py-16 px-6">
-        <div className="max-w-[1280px] mx-auto">
-          <div className="flex justify-between gap-12 mb-12 flex-wrap">
-            {/* Brand */}
-            <div className="max-w-[440px]">
-              <img src="/logo.svg" alt="FontsVerse" width={130} height={30} className="mb-8" />
-              <p className="text-[16px] leading-[26px] text-[#666]">
-                FontsVerse was built to give designers and developers a fast, framework-agnostic way to host, manage, and integrate custom typography — without vendor lock-in.
-              </p>
-            </div>
-
-            {/* Nav columns */}
-            <div className="flex gap-[100px] flex-wrap">
-              <div>
-                <p className="text-[18px] font-medium tracking-[1.8px] uppercase text-[#FB8500] mb-10">Browse</p>
-                <div className="flex flex-col gap-5 text-[16px] font-light text-[#333]">
-                  <Link href="/fonts"   className="hover:text-[#023047] transition-colors">Fonts</Link>
-                  <span className="text-gray-300">Font packs</span>
-                  <span className="text-gray-300">Collections</span>
-                  <span className="text-gray-300">Designers</span>
-                </div>
-              </div>
-              <div>
-                <p className="text-[18px] font-medium tracking-[1.8px] uppercase text-[#FB8500] mb-10">Support</p>
-                <div className="flex flex-col gap-5 text-[16px] font-light text-[#333]">
-                  <span className="text-gray-300">Help</span>
-                  <Link href="/contact" className="hover:text-[#023047] transition-colors">Contact</Link>
-                  <Link href="/contact" className="hover:text-[#023047] transition-colors">Send us Feedback</Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-[#e1e1e1] pt-8 flex justify-between items-center flex-wrap gap-3 text-[16px] font-light text-[#666]">
-            <span>Copyright©2026 FontsVerse</span>
-            <span>Privacy policy | All rights reserved</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {modal==="auth"    && <AuthModal onClose={close} />}
       {modal==="upload"  && <UploadModal onClose={close} onAuthRequired={() => setModal("auth")} />}

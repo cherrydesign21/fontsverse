@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getFontFaceCSS } from "@/lib/fonts";
 import type { DBFont } from "@/lib/supabase";
 import Header from "./Header";
+import Footer from "./Footer";
 import AuthModal from "./AuthModal";
 import UploadModal from "./UploadModal";
 import AdModal from "./AdModal";
@@ -113,8 +114,28 @@ export default function FontsPageClient() {
   const [query, setQuery]           = useState("");
   const [sortBy, setSortBy]         = useState<SortKey>("downloads");
   const [showSort, setShowSort]     = useState(false);
+  const [langFilter, setLangFilter] = useState("All Scripts");
+  const [techFilter, setTechFilter] = useState("All Formats");
+  const [showLang, setShowLang]     = useState(false);
+  const [showTech, setShowTech]     = useState(false);
   const sortRef                     = useRef<HTMLDivElement>(null);
+  const langRef                     = useRef<HTMLDivElement>(null);
+  const techRef                     = useRef<HTMLDivElement>(null);
   const close = () => setModal(null);
+
+  useEffect(() => {
+    if (!showLang) return;
+    const h = (e: MouseEvent) => { if (langRef.current && !langRef.current.contains(e.target as Node)) setShowLang(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [showLang]);
+
+  useEffect(() => {
+    if (!showTech) return;
+    const h = (e: MouseEvent) => { if (techRef.current && !techRef.current.contains(e.target as Node)) setShowTech(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [showTech]);
 
   // close sort dropdown on outside click
   useEffect(() => {
@@ -135,12 +156,20 @@ export default function FontsPageClient() {
     return () => { try { document.head.removeChild(link); } catch {} };
   }, []);
 
+  const LANG_OPTS  = ["All Scripts", "Latin", "Extended Latin", "Cyrillic", "Arabic", "CJK"];
+  const TECH_OPTS  = ["All Formats", "Has WOFF2", "Has TTF", "Has WOFF"];
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let list = fonts.filter(f => {
       const mq = !q || f.name.toLowerCase().includes(q) || f.category.toLowerCase().includes(q);
       const mc = category === "All" || f.category === category;
-      return mq && mc;
+      const ml = langFilter === "All Scripts" || langFilter === "Latin" || langFilter === "Extended Latin";
+      const mt = techFilter === "All Formats"
+        || (techFilter === "Has WOFF2" && !!f.file_woff2)
+        || (techFilter === "Has TTF"   && !!f.file_ttf)
+        || (techFilter === "Has WOFF"  && !!f.file_woff);
+      return mq && mc && ml && mt;
     });
     if (sortBy === "downloads") list = [...list].sort((a,b) => b.downloads - a.downloads);
     else if (sortBy === "newest") list = [...list].sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -200,29 +229,53 @@ export default function FontsPageClient() {
           <div className="h-px bg-white/20" />
 
           {/* Filter — Language */}
-          <div className="p-5">
-            <p className="text-white text-[16px] font-light mb-4">Filter</p>
-            <button className="w-full flex items-center gap-3 h-10 rounded-[6px] px-4 text-white text-[16px] font-light text-left"
+          <div className="p-5 relative" ref={langRef}>
+            <p className="text-white text-[16px] font-light mb-4">Language</p>
+            <button onClick={() => { setShowLang(!showLang); setShowTech(false); }}
+              className="w-full flex items-center justify-between gap-3 h-10 rounded-[6px] px-4 text-white text-[16px] font-light text-left"
               style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M1 2.5h12M3 7h8M5 11.5h4" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+              <span className="truncate">{langFilter}</span>
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={`shrink-0 transition-transform ${showLang ? "rotate-180" : ""}`}>
+                <path d="M1 1l4 4 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Language
             </button>
+            {showLang && (
+              <div className="absolute left-5 right-5 top-full -mt-2 z-50 bg-white rounded-lg shadow-xl overflow-hidden">
+                {LANG_OPTS.map(opt => (
+                  <button key={opt} onClick={() => { setLangFilter(opt); setShowLang(false); }}
+                    className={`w-full text-left px-4 py-2.5 text-[14px] transition-colors
+                      ${langFilter === opt ? "bg-[#023047] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="h-px bg-white/20" />
 
           {/* Font Technology */}
-          <div className="p-5">
+          <div className="p-5 relative" ref={techRef}>
             <p className="text-white text-[16px] font-light mb-4">Font Technology</p>
-            <button className="w-full flex items-center gap-3 h-10 rounded-[6px] px-4 text-white text-[16px] font-light text-left"
+            <button onClick={() => { setShowTech(!showTech); setShowLang(false); }}
+              className="w-full flex items-center justify-between gap-3 h-10 rounded-[6px] px-4 text-white text-[16px] font-light text-left"
               style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
-              <svg width="19" height="14" viewBox="0 0 19 14" fill="none">
-                <path d="M1 2h17M4 7h11M7 12h5" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+              <span className="truncate">{techFilter}</span>
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={`shrink-0 transition-transform ${showTech ? "rotate-180" : ""}`}>
+                <path d="M1 1l4 4 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Variable Fonts
             </button>
+            {showTech && (
+              <div className="absolute left-5 right-5 top-full -mt-2 z-50 bg-white rounded-lg shadow-xl overflow-hidden">
+                {TECH_OPTS.map(opt => (
+                  <button key={opt} onClick={() => { setTechFilter(opt); setShowTech(false); }}
+                    className={`w-full text-left px-4 py-2.5 text-[14px] transition-colors
+                      ${techFilter === opt ? "bg-[#023047] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="h-px bg-white/20" />
@@ -322,42 +375,7 @@ export default function FontsPageClient() {
         </main>
       </div>
 
-      {/* ── Footer ── */}
-      <footer className="bg-white py-16 px-6">
-        <div className="max-w-290 mx-auto">
-          <div className="flex justify-between gap-12 mb-12 flex-wrap">
-            <div style={{ maxWidth: 440 }}>
-              <img src="/logo.svg" alt="FontsVerse" width={130} height={30} className="mb-8" />
-              <p className="text-[16px] leading-[26px] text-[#666]">
-                FontsVerse was built to give designers and developers a fast, framework-agnostic way to host, manage, and integrate custom typography — without vendor lock-in.
-              </p>
-            </div>
-            <div className="flex gap-[100px] flex-wrap">
-              <div>
-                <p className="text-[18px] font-medium tracking-[1.8px] uppercase text-[#FB8500] mb-10">Browse</p>
-                <div className="flex flex-col gap-5 text-[16px] font-light text-[#333]">
-                  <Link href="/fonts"   className="hover:text-[#023047] transition-colors">Fonts</Link>
-                  <span className="text-gray-300">Font packs</span>
-                  <span className="text-gray-300">Collections</span>
-                  <span className="text-gray-300">Designers</span>
-                </div>
-              </div>
-              <div>
-                <p className="text-[18px] font-medium tracking-[1.8px] uppercase text-[#FB8500] mb-10">Support</p>
-                <div className="flex flex-col gap-5 text-[16px] font-light text-[#333]">
-                  <span className="text-gray-300">Help</span>
-                  <Link href="/contact" className="hover:text-[#023047] transition-colors">Contact</Link>
-                  <Link href="/contact" className="hover:text-[#023047] transition-colors">Send us Feedback</Link>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-[#e1e1e1] pt-8 flex justify-between items-center flex-wrap gap-3 text-[16px] font-light text-[#666]">
-            <span>Copyright©2026 FontsVerse</span>
-            <span>Privacy policy | All rights reserved</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {modal==="auth"    && <AuthModal onClose={close} />}
       {modal==="upload"  && <UploadModal onClose={close} onAuthRequired={() => setModal("auth")} />}

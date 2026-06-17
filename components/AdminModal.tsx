@@ -8,17 +8,26 @@ import { Overlay } from "./AuthModal";
 
 interface Props { onClose: () => void }
 
+interface UserRow { id: string; name: string; email: string; role: string; plan: string; created_at: string; }
+interface MsgRow  { id: string; name: string; email: string; topic: string; message: string; created_at: string; }
+
+type Tab = "fonts" | "ads" | "users" | "msgs" | "stats";
+
 export default function AdminModal({ onClose }: Props) {
   const { user, isAdmin, profile } = useAuth();
   const { fonts, removeFont, updateFont } = useFonts();
   const { notify }   = useNotif();
-  const [tab, setTab]       = useState<"fonts"|"ads"|"users">("fonts");
+  const [tab, setTab]       = useState<Tab>("fonts");
   const [ads, setAds]       = useState<Ad[]>([]);
-  const [stats, setStats]   = useState({ totalFonts:0, totalUsers:0, totalDownloads:0, pendingAds:0, activeAds:0 });
+  const [stats, setStats]   = useState({ totalFonts:0, totalUsers:0, totalDownloads:0, pendingAds:0, activeAds:0, publicFonts:0, adminUsers:0 });
+  const [userList, setUserList]   = useState<UserRow[]>([]);
+  const [messages, setMessages]   = useState<MsgRow[]>([]);
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
   const [newCat, setNewCat]   = useState("Sans-Serif");
   const [adLoading, setAdLoading] = useState(false);
+  const [usersLoaded, setUsersLoaded]   = useState(false);
+  const [msgsLoaded, setMsgsLoaded]     = useState(false);
 
   if (!isAdmin) return (
     <Overlay onClose={onClose}>
@@ -37,6 +46,21 @@ export default function AdminModal({ onClose }: Props) {
     fetch("/api/ads?admin=1").then(r => r.json()).then(d => setAds(d.ads || [])).catch(() => {});
   }, []);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (tab === "users" && !usersLoaded) {
+      fetch("/api/admin?type=users").then(r => r.json())
+        .then(d => { setUserList(d.users || []); setUsersLoaded(true); })
+        .catch(() => {});
+    }
+    if (tab === "msgs" && !msgsLoaded) {
+      fetch("/api/admin?type=messages").then(r => r.json())
+        .then(d => { setMessages(d.messages || []); setMsgsLoaded(true); })
+        .catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
+
   const approveAd = async (id: string, status: "active"|"rejected", note?: string) => {
     setAdLoading(true);
     const res = await fetch("/api/ads", {
@@ -52,11 +76,13 @@ export default function AdminModal({ onClose }: Props) {
     }
   };
 
-  const TABS = [
+  const TABS: { id: Tab; label: string }[] = [
     { id: "fonts", label: `Fonts (${fonts.length})` },
     { id: "ads",   label: `Ads (${ads.length})` },
-    { id: "users", label: "Stats" },
-  ] as const;
+    { id: "users", label: `Users (${usersLoaded ? userList.length : stats.totalUsers || "…"})` },
+    { id: "msgs",  label: `Messages (${msgsLoaded ? messages.length : "…"})` },
+    { id: "stats", label: "Stats" },
+  ];
 
   return (
     <Overlay onClose={onClose} wide>
@@ -75,10 +101,10 @@ export default function AdminModal({ onClose }: Props) {
         )}
       </div>
 
-      <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-5">
+      <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-5 flex-wrap">
         {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className={`flex-1 py-2 rounded-md text-[12px] font-medium transition-all
+            className={`flex-1 py-2 rounded-md text-[12px] font-medium transition-all min-w-[70px]
               ${tab===t.id ? "bg-amber-100 text-amber-700" : "text-gray-400 hover:text-gray-600"}`}>
             {t.label}
           </button>
@@ -103,7 +129,7 @@ export default function AdminModal({ onClose }: Props) {
             </div>
           )}
           <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
-            {fonts.slice(0,20).map(f => (
+            {fonts.slice(0, 50).map(f => (
               <div key={f.id} className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center" style={{ background: f.bg_color }}>
                   <span className="text-[11px] font-bold" style={{ color: f.text_color }}>{f.name.slice(0,2)}</span>
@@ -166,10 +192,61 @@ export default function AdminModal({ onClose }: Props) {
       )}
 
       {tab === "users" && (
+        <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+          {!usersLoaded && <p className="text-center text-gray-400 py-8">Loading users…</p>}
+          {usersLoaded && userList.length === 0 && <p className="text-center text-gray-400 py-8">No users found.</p>}
+          {userList.map(u => (
+            <div key={u.id} className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white shrink-0"
+                style={{ background: u.role === "admin" ? "linear-gradient(135deg,#f59e0b,#f97316)" : "linear-gradient(135deg,#219EBC,#023047)" }}>
+                {(u.name || u.email || "?")[0].toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-gray-900 font-semibold text-sm truncate">{u.name || "—"}</p>
+                <p className="text-gray-400 text-xs truncate">{u.email}</p>
+              </div>
+              <div className="flex gap-1.5 shrink-0">
+                {u.role === "admin" && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200">ADMIN</span>
+                )}
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border
+                  ${u.plan === "pro" ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-gray-100 text-gray-400 border-gray-200"}`}>
+                  {u.plan?.toUpperCase() || "FREE"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === "msgs" && (
+        <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
+          {!msgsLoaded && <p className="text-center text-gray-400 py-8">Loading messages…</p>}
+          {msgsLoaded && messages.length === 0 && <p className="text-center text-gray-400 py-8">No messages yet.</p>}
+          {messages.map(m => (
+            <div key={m.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div>
+                  <p className="text-gray-900 font-semibold text-sm">{m.name || m.email}</p>
+                  <p className="text-gray-400 text-xs">{m.email} · {new Date(m.created_at).toLocaleDateString()}</p>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200 shrink-0">
+                  {m.topic}
+                </span>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">{m.message}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === "stats" && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {[
             { val: stats.totalFonts,     label: "Total Fonts" },
+            { val: stats.publicFonts,    label: "Public Fonts" },
             { val: stats.totalUsers,     label: "Registered Users" },
+            { val: stats.adminUsers,     label: "Admin Users" },
             { val: stats.totalDownloads, label: "Total Downloads" },
             { val: stats.pendingAds,     label: "Pending Ads" },
             { val: stats.activeAds,      label: "Active Ads" },

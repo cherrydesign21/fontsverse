@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -18,6 +19,7 @@ interface Props {
 export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClick, onAdminClick, onAccountClick }: Props) {
   const { user, profile, isAdmin, signOut } = useAuth();
   const { notify } = useNotif();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,19 +34,19 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-[#e1e1e1]"
       style={{ height: 80 }}>
-      <div className="max-w-[1440px] mx-auto px-8 h-full flex items-center gap-8">
+      <div className="max-w-[1440px] mx-auto px-8 h-full flex items-center relative">
         <Link href="/" className="shrink-0 flex items-center">
           <Image src="/logo.svg" alt="FontsVerse" width={130} height={22} priority />
         </Link>
-        <div className="shrink-0" style={{ width: 350 }}>
+        <div className="absolute left-1/2 -translate-x-1/2" style={{ width: 520 }}>
           <SearchBar onSearch={onSearch} compact />
         </div>
         <nav className="flex items-center gap-7 ml-auto" style={{ fontFamily: "Outfit, system-ui, sans-serif" }}>
-          <Link href="/about"   className="text-[#333] hover:text-black text-[16px] font-light transition-colors hidden md:block">About</Link>
-          <Link href="/pricing" className="text-[#333] hover:text-black text-[16px] font-light transition-colors hidden md:block">Pricing</Link>
-          <Link href="/contact" className="text-[#333] hover:text-black text-[16px] font-light transition-colors hidden md:block">Contact</Link>
+          <Link href="/about"   className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">About</Link>
+          <Link href="/pricing" className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Pricing</Link>
+          <Link href="/contact" className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">Contact</Link>
           <button onClick={onAdClick}
-            className="text-[#333] hover:text-black text-[16px] font-light transition-colors hidden md:block">
+            className="text-[#333] hover:text-black text-[16px] font-medium transition-colors hidden md:block">
             Post an Ad
           </button>
 
@@ -77,7 +79,10 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
                   </div>
 
                   <DdBtn icon="↑" label="Upload Font"      onClick={() => { setOpen(false); onUploadClick(); }} />
-                  <DdBtn icon="⚙" label="Account Settings" onClick={() => { setOpen(false); onAccountClick(); }} />
+                  <button onClick={() => { setOpen(false); router.push("/account"); }}
+                    className="w-full text-left flex items-center gap-3 px-4 py-2.5 text-[13px] text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <span className="w-4 text-center text-gray-400">⚙</span> Account Settings
+                  </button>
                   <Link href="/account" onClick={() => setOpen(false)}
                     className="flex items-center gap-3 px-4 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 text-[13px] transition-colors">
                     <span className="w-4 text-center text-gray-400">👤</span> My Fonts

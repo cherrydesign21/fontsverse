@@ -90,8 +90,10 @@ export default function FontSinglePageClient({ font }: { font: DBFont }) {
     const face = getFontFaceCSS(font);
     if (!face) return `/* No font file — upload a TTF/WOFF/WOFF2 file first */`;
     switch (framework) {
-      case "html":
-        return `<style>\n${face}\n</style>\n\n<!-- Usage -->\n<p style="font-family: '${font.name}', sans-serif;">\n  Your text here\n</p>`;
+      case "html": {
+        const cssUrl = `https://fontsverse.vercel.app/api/css/${font.slug}`;
+        return `<!-- 1. Link the font stylesheet -->\n<link rel="stylesheet" href="${cssUrl}">\n\n<!-- 2. Use in HTML -->\n<p style="font-family: '${font.name}', sans-serif;">\n  Your text here\n</p>`;
+      }
       case "css":
         return `${face}\n\n.my-element {\n  font-family: '${font.name}', sans-serif;\n  font-weight: ${font.font_weight};\n}`;
       case "react":

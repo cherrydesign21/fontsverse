@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Header from "./Header";
+import Footer from "./Footer";
 import AuthModal from "./AuthModal";
 import UploadModal from "./UploadModal";
 import AdModal from "./AdModal";
@@ -113,6 +114,8 @@ export default function AboutPageClient() {
           </a>
         </div>
       </main>
+
+      <Footer />
 
       {modal === "auth"    && <AuthModal onClose={close} />}
       {modal === "upload"  && <UploadModal onClose={close} onAuthRequired={() => setModal("auth")} />}

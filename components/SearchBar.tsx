@@ -64,7 +64,7 @@ export default function SearchBar({ onSearch, compact }: Props) {
           onKeyDown={keyDown}
           onFocus={() => { if (suggestions.length > 0) setOpen(true); }}
           placeholder="Find your font"
-          className="w-full pl-11 pr-8 h-[50px] rounded-full outline-none text-[15px] font-light text-gray-800 placeholder-[#666] transition-all focus:ring-1 focus:ring-[#FFB703]/60"
+          className="w-full pl-11 pr-8 h-[58px] rounded-full outline-none text-[15px] font-light text-gray-800 placeholder-[#666] transition-all focus:ring-1 focus:ring-[#FFB703]/60"
           style={{ background: "#f9f9f9", border: "1px solid #ddd", fontFamily: "Outfit, system-ui, sans-serif" }}
           autoComplete="off" spellCheck={false} />
         {query && (

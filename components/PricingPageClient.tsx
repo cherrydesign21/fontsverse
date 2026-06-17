@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNotif } from "@/context/NotifContext";
 import Header from "./Header";
+import Footer from "./Footer";
 import AuthModal from "./AuthModal";
 import UploadModal from "./UploadModal";
 import AdModal from "./AdModal";
@@ -29,11 +30,31 @@ const PRO_FEATURES = [
   "Support indie font hosting",
 ];
 
+const FAQS = [
+  {
+    q: "What does 'embed all fonts' mean?",
+    a: "Free users can embed fonts they personally uploaded. Pro users can embed any font from the entire FontsVerse library in their projects — including fonts uploaded by other users.",
+  },
+  {
+    q: "Can I cancel anytime?",
+    a: "Yes. You can cancel your subscription anytime from your account settings. You'll keep Pro access until the end of your billing period.",
+  },
+  {
+    q: "What payment methods are accepted?",
+    a: "All major credit and debit cards via Stripe. Secure, no data stored on our servers.",
+  },
+  {
+    q: "Is there a free trial?",
+    a: "The Free plan is free forever — you can use it as long as you need. Upgrade to Pro when you want access to the full font library.",
+  },
+];
+
 export default function PricingPageClient() {
   const { user, profile } = useAuth();
   const { notify }        = useNotif();
   const [modal, setModal] = useState<Modal>(null);
   const [loading, setLoading] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const close = () => setModal(null);
 
   const isPro = (profile as { plan?: string } | null)?.plan === "pro";
@@ -146,36 +167,30 @@ export default function PricingPageClient() {
           </div>
         </div>
 
-        {/* FAQ */}
+        {/* FAQ accordion */}
         <div className="mt-16 max-w-[600px] mx-auto">
           <h2 className="text-lg font-bold text-center mb-8 text-gray-700">Common questions</h2>
-          <div className="space-y-5">
-            {[
-              {
-                q: "What does 'embed all fonts' mean?",
-                a: "Free users can embed fonts they personally uploaded. Pro users can embed any font from the entire FontsVerse library in their projects — including fonts uploaded by other users.",
-              },
-              {
-                q: "Can I cancel anytime?",
-                a: "Yes. You can cancel your subscription anytime from your account settings. You'll keep Pro access until the end of your billing period.",
-              },
-              {
-                q: "What payment methods are accepted?",
-                a: "All major credit and debit cards via Stripe. Secure, no data stored on our servers.",
-              },
-              {
-                q: "Is there a free trial?",
-                a: "The Free plan is free forever — you can use it as long as you need. Upgrade to Pro when you want access to the full font library.",
-              },
-            ].map(item => (
-              <div key={item.q} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                <p className="font-semibold text-gray-900 text-sm mb-1.5">{item.q}</p>
-                <p className="text-gray-400 text-sm leading-relaxed">{item.a}</p>
+          <div className="space-y-3">
+            {FAQS.map((item, i) => (
+              <div key={item.q} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between px-5 py-4 text-left">
+                  <span className="font-semibold text-gray-900 text-sm">{item.q}</span>
+                  <span className={`text-gray-400 text-lg ml-3 shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-45" : ""}`}>+</span>
+                </button>
+                {openFaq === i && (
+                  <div className="px-5 pb-4">
+                    <p className="text-gray-400 text-sm leading-relaxed">{item.a}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
       </main>
+
+      <Footer />
 
       {modal === "auth"    && <AuthModal onClose={close} />}
       {modal === "upload"  && <UploadModal onClose={close} onAuthRequired={() => setModal("auth")} />}

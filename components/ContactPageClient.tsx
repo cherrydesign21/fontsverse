@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Header from "./Header";
+import Footer from "./Footer";
 import AuthModal from "./AuthModal";
 import UploadModal from "./UploadModal";
 import AdModal from "./AdModal";
@@ -112,6 +113,8 @@ export default function ContactPageClient() {
           </div>
         )}
       </main>
+
+      <Footer />
 
       {modal === "auth"    && <AuthModal onClose={close} />}
       {modal === "upload"  && <UploadModal onClose={close} onAuthRequired={() => setModal("auth")} />}

@@ -47,20 +47,18 @@ export default function FontCard({ font, isFav = false, onToggleFav }: Props) {
 
         {/* Font name — bottom-left, large, matching Figma */}
         <span
-          className="absolute leading-none"
+          className="absolute leading-[1.1]"
           style={{
-            top: "55%",
+            top: "50%",
             left: "8%",
-            right: "5%",
-            fontSize: "clamp(28px, 6.5vw, 80px)",
+            right: "8%",
+            fontSize: "clamp(20px, 4.5vw, 56px)",
             fontFamily:    font.font_family,
             fontWeight:    font.font_weight,
             fontStyle:     font.font_style,
             letterSpacing: font.letter_spacing,
             color:         font.text_color,
-            whiteSpace:    "nowrap",
-            overflow:      "hidden",
-            textOverflow:  "ellipsis",
+            wordBreak:     "break-word",
           }}>
           {font.name}
         </span>
