@@ -36,7 +36,7 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
       style={{ height: 80 }}>
       <div className="max-w-[1440px] mx-auto px-8 h-full flex items-center relative">
         <Link href="/" className="shrink-0 flex items-center">
-          <Image src="/logo.svg" alt="FontsVerse" width={130} height={22} priority />
+          <Image src="/logo.svg" alt="FontsVerse" width={180} height={30} priority />
         </Link>
         <div className="absolute" style={{ width: 400, left: "calc(50% - 60px)", transform: "translateX(-50%)" }}>
           <SearchBar onSearch={onSearch} compact />
@@ -119,14 +119,14 @@ export default function Header({ onSearch, onLoginClick, onUploadClick, onAdClic
               )}
             </div>
           ) : (
-            <button onClick={onLoginClick}
+            <Link href="/login"
               className="inline-flex items-center gap-2 px-[26px] py-[14px] rounded-[8px] text-[14px] font-semibold uppercase tracking-[1.4px] text-black hover:opacity-90 transition-opacity cursor-pointer"
               style={{ background: "linear-gradient(114deg,#FFB703 5%,#FB8500 105%)", fontFamily: "Outfit, system-ui, sans-serif" }}>
               Login
               <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                 <path d="M1 12L12 1M12 1H5M12 1v7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </button>
+            </Link>
           )}
         </nav>
       </div>

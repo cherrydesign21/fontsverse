@@ -19,22 +19,48 @@ const Ctx = createContext<FontsCtx>({
   incrementDownload: async () => {},
 });
 
+const CACHE_KEY = "fontsverse_fonts_cache";
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function loadCache(): DBFont[] | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL) return null;
+    return data as DBFont[];
+  } catch { return null; }
+}
+
+function saveCache(data: DBFont[]) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
+}
+
 export function FontsProvider({ children }: { children: ReactNode }) {
   const [fonts, setFonts] = useState<DBFont[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refetch = useCallback(async () => {
-    setLoading(true);
     const { data } = await supabase
       .from("fonts")
       .select("*")
       .eq("is_public", true)
       .order("downloads", { ascending: false });
-    if (data) setFonts(data as DBFont[]);
+    if (data) {
+      setFonts(data as DBFont[]);
+      saveCache(data as DBFont[]);
+    }
     setLoading(false);
   }, []);
 
-  useEffect(() => { refetch(); }, [refetch]);
+  useEffect(() => {
+    const cached = loadCache();
+    if (cached) {
+      setFonts(cached);
+      setLoading(false);
+    }
+    refetch();
+  }, [refetch]);
 
   const addFont = async (font: Partial<DBFont>) => {
     const { data, error } = await supabase

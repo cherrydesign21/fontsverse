@@ -1,5 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import Header from "./Header";
 import Footer from "./Footer";
 import AuthModal from "./AuthModal";
@@ -12,30 +14,35 @@ import Reveal from "./Reveal";
 
 type ModalType = "auth" | "upload" | "ad" | "account" | "admin" | null;
 
-interface Stats { totalFonts: number; totalDownloads: number; }
+const AMBER_GRAD = "linear-gradient(145.93deg, #FFB703 5.03%, #FB8500 105.22%)";
+
+const STATS = [
+  { num: "80+",  label: "Fonts Hosted" },
+  { num: "550+", label: "Total Downloads" },
+  { num: "20+",  label: "Countries" },
+  { num: "$0",   label: "Cost to Upload" },
+];
+
+const FLOATING_FONTS = [
+  { t: "Outfit",        top: "18%", left: "5%",  s: 28, op: 0.18 },
+  { t: "Montserrat",    top: "28%", left: "12%", s: 22, op: 0.14 },
+  { t: "Space Grotesk", top: "40%", left: "3%",  s: 20, op: 0.16 },
+  { t: "Bebas Neue",    top: "55%", left: "8%",  s: 30, op: 0.12 },
+  { t: "Raleway",       top: "68%", left: "5%",  s: 24, op: 0.15 },
+  { t: "Inter",         top: "22%", right: "6%", s: 26, op: 0.14 },
+  { t: "Lato",          top: "35%", right: "4%", s: 32, op: 0.12 },
+  { t: "Open Sans",     top: "50%", right: "7%", s: 22, op: 0.16 },
+  { t: "Nunito",        top: "65%", right: "5%", s: 28, op: 0.13 },
+  { t: "Playfair",      top: "76%", right: "8%", s: 24, op: 0.14 },
+] as const;
 
 export default function AboutPageClient() {
   const { user } = useAuth();
   const [modal, setModal] = useState<ModalType>(null);
-  const [stats, setStats] = useState<Stats | null>(null);
   const close = () => setModal(null);
 
-  useEffect(() => {
-    fetch("/api/stats").then(r => r.json()).then(d => setStats(d)).catch(() => {});
-  }, []);
-
-  const fmt = (n: number) =>
-    n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
-
-  const STATS = [
-    { val: stats ? fmt(stats.totalFonts)     : "…", label: "Fonts Hosted" },
-    { val: stats ? fmt(stats.totalDownloads) : "…", label: "Total Downloads" },
-    { val: "8",                                       label: "Frameworks Supported" },
-    { val: "$0",                                      label: "Cost to Upload" },
-  ];
-
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white" style={{ fontFamily: "Outfit, system-ui, sans-serif" }}>
       <Header
         onSearch={() => {}}
         onLoginClick={() => setModal("auth")}
@@ -45,90 +52,159 @@ export default function AboutPageClient() {
         onAccountClick={() => setModal("account")}
       />
 
-      <main className="max-w-[900px] mx-auto px-6 pt-28 pb-20">
-
-        {/* Hero */}
-        <div className="mb-20">
-          <Reveal animation="left" delay={0}>
-            <p className="text-[13px] font-semibold tracking-[3px] uppercase text-gray-400 mb-6">Our Story</p>
+      {/* ── Hero ── */}
+      <section className="relative w-full overflow-hidden" style={{ height: 600, marginTop: 80 }}>
+        <Image
+          src="/about-hero-bg.jpg"
+          alt="Colorful typography"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          <Reveal animation="scale" delay={0}>
+            <span className="inline-block px-5 py-2 rounded-full border border-white/50 text-white/80 text-[13px] font-medium tracking-[2px] uppercase mb-7">
+              Our Story
+            </span>
           </Reveal>
-          <Reveal animation="up" delay={100}>
-            <h1 className="text-5xl font-black tracking-tight mb-5">
+          <Reveal animation="up" delay={120}>
+            <h1 className="text-[64px] sm:text-[80px] font-bold leading-[1.05] text-white mb-5 max-w-[800px]">
               Fonts for the{" "}
-              <span className="bg-clip-text text-transparent"
-                style={{ backgroundImage: "linear-gradient(135deg,#8ECAE6,#219EBC,#023047,#FFB703,#FB8500)" }}>
-                open web
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: AMBER_GRAD }}>
+                Open Web
               </span>
             </h1>
           </Reveal>
-          <Reveal animation="up" delay={200}>
-            <p className="text-gray-500 text-lg leading-relaxed max-w-[600px]">
-              FontsVerse was built to give designers and developers a fast, framework-agnostic way
-              to host, manage, and integrate custom typography — without vendor lock-in.
+          <Reveal animation="up" delay={240}>
+            <p className="text-white/70 text-[18px] leading-relaxed max-w-[580px]">
+              A fast, open, and framework-agnostic way to host, manage, and embed custom typography — without vendor lock-in.
             </p>
           </Reveal>
         </div>
+      </section>
 
-        {/* Real stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-20">
-          {STATS.map((s, i) => (
-            <Reveal key={s.label} animation="up" delay={i * 80}>
-              <div className="bg-white border border-gray-200 rounded-xl p-5 text-center shadow-sm">
-                <p className="text-3xl font-black text-gray-900 mb-1">{s.val}</p>
-                <p className="text-gray-400 text-xs">{s.label}</p>
-              </div>
-            </Reveal>
-          ))}
+      {/* ── Stats ── */}
+      <section className="py-20 bg-white">
+        <div className="max-w-[1100px] mx-auto px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {STATS.map((s, i) => (
+              <Reveal key={s.label} animation="up" delay={i * 80}>
+                <div className="text-center">
+                  <p className="text-[60px] font-bold leading-none mb-2" style={{ color: "#FB8500" }}>
+                    {s.num}
+                  </p>
+                  <p className="text-[16px] text-gray-500">{s.label}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* Mission */}
-        <Reveal animation="up" delay={0}>
-          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 mb-16">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">What FontsVerse does</h2>
-            <p className="text-gray-500 leading-relaxed mb-4">
-              Typography is one of the most powerful design tools, yet hosting custom fonts remains
-              fragmented. FontsVerse solves this with a single platform where you upload once and
-              get working embed code for any framework — HTML, CSS, React, Next.js, Vue, Angular,
-              Flutter, and Android.
-            </p>
-            <p className="text-gray-500 leading-relaxed">
-              Fonts are stored in your original format and served directly from Supabase Storage.
-              No lock-in, no tracking in the delivery path, and the embed code always points to
-              your actual file URL.
-            </p>
-          </div>
-        </Reveal>
+      {/* ── Section 1: What FontsVerse does (text left, image right) ── */}
+      <section className="py-20 bg-[#f9f5ec]">
+        <div className="max-w-[1100px] mx-auto px-8 grid lg:grid-cols-2 gap-16 items-center">
+          <Reveal animation="left" delay={0}>
+            <div>
+              <h2 className="text-[48px] font-bold leading-tight mb-6">
+                What FontsVerse{" "}
+                <span className="bg-clip-text text-transparent" style={{ backgroundImage: AMBER_GRAD }}>
+                  does
+                </span>
+              </h2>
+              <p className="text-gray-600 text-[17px] leading-relaxed mb-5">
+                Typography is one of the most powerful design tools, yet hosting custom fonts remains fragmented. FontsVerse solves this with a single platform where you upload once and get working embed code for any framework — HTML, CSS, React, Next.js, Vue, Angular, Flutter, and Android.
+              </p>
+              <p className="text-gray-500 text-[16px] leading-relaxed">
+                Fonts are stored in your original format and served directly. No lock-in, no tracking, and the embed code always points to your actual file URL.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal animation="right" delay={120}>
+            <div className="rounded-2xl overflow-hidden shadow-xl">
+              <Image
+                src="/about-section1.jpg"
+                alt="Letterpress typography"
+                width={540}
+                height={400}
+                className="w-full object-cover"
+              />
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
-        {/* Honest builder section */}
-        <Reveal animation="up" delay={0}>
-          <div className="mb-16 border border-gray-100 rounded-2xl p-8">
-            <h2 className="text-2xl font-bold mb-4">Built independently</h2>
-            <p className="text-gray-500 leading-relaxed">
-              FontsVerse is an independent project — not a corporate product or a funded startup.
-              It exists because the problem of hosting and integrating custom fonts is genuinely
-              annoying to solve, and nothing out there felt right. If it's useful to you, that's
-              the whole point.
-            </p>
-            <p className="text-gray-400 text-sm mt-4">
-              Have feedback or a bug to report?{" "}
-              <a href="/contact" className="text-amber-600 hover:underline">Reach out →</a>
-            </p>
-          </div>
-        </Reveal>
+      {/* ── Section 2: Built independently (image left, text right) ── */}
+      <section className="py-20 bg-white">
+        <div className="max-w-[1100px] mx-auto px-8 grid lg:grid-cols-2 gap-16 items-center">
+          <Reveal animation="left" delay={0}>
+            <div className="rounded-2xl overflow-hidden shadow-xl">
+              <Image
+                src="/about-section2.jpg"
+                alt="Colorful letter blocks"
+                width={540}
+                height={400}
+                className="w-full object-cover"
+              />
+            </div>
+          </Reveal>
+          <Reveal animation="right" delay={120}>
+            <div>
+              <h2 className="text-[48px] font-bold leading-tight mb-6">
+                Built{" "}
+                <span className="bg-clip-text text-transparent" style={{ backgroundImage: AMBER_GRAD }}>
+                  independently
+                </span>
+              </h2>
+              <p className="text-gray-600 text-[17px] leading-relaxed mb-5">
+                FontsVerse is an independent project — not a corporate product or a funded startup. It exists because the problem of hosting and integrating custom fonts is genuinely annoying to solve, and nothing out there felt right.
+              </p>
+              <p className="text-gray-500 text-[16px] leading-relaxed">
+                If it&apos;s useful to you, that&apos;s the whole point. Have feedback?{" "}
+                <Link href="/contact" className="font-semibold hover:underline" style={{ color: "#FB8500" }}>
+                  Reach out →
+                </Link>
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
-        {/* CTA */}
-        <Reveal animation="scale" delay={0}>
-          <div className="text-center border border-gray-200 rounded-2xl p-10 bg-white shadow-sm">
-            <h2 className="text-2xl font-bold mb-3">Start hosting your fonts today</h2>
-            <p className="text-gray-400 text-sm mb-6">Free forever for public fonts. No credit card required.</p>
-            <a href="/"
-              className="inline-block text-white px-8 py-3 rounded-xl font-semibold text-sm hover:opacity-85 transition-opacity"
-              style={{ background: "linear-gradient(135deg,#FFB703,#FB8500)" }}>
+      {/* ── CTA ── */}
+      <section className="relative py-24 overflow-hidden" style={{ background: "#011520" }}>
+        <Image src="/cta-bg.jpg" alt="" fill className="object-cover opacity-40" />
+        {FLOATING_FONTS.map((f, i) => (
+          <span key={i} style={{
+            position:   "absolute",
+            top:        f.top,
+            left:       "left" in f ? f.left : undefined,
+            right:      "right" in f ? (f as { right: string }).right : undefined,
+            fontSize:   f.s,
+            fontWeight: 700,
+            color:      `rgba(255,255,255,${f.op})`,
+            whiteSpace: "nowrap",
+            pointerEvents: "none",
+          }}>{f.t}</span>
+        ))}
+        <div className="relative text-center max-w-[700px] mx-auto px-8">
+          <Reveal animation="up" delay={0}>
+            <h2 className="text-[52px] font-bold text-white leading-tight mb-4">
+              Start hosting your fonts today
+            </h2>
+          </Reveal>
+          <Reveal animation="up" delay={120}>
+            <p className="text-white/60 text-[18px] mb-8">Free forever for public fonts. No credit card required.</p>
+          </Reveal>
+          <Reveal animation="up" delay={220}>
+            <Link href="/"
+              className="inline-block px-10 py-4 rounded-[10px] text-[15px] font-semibold uppercase tracking-widest text-black hover:opacity-90 transition-opacity"
+              style={{ backgroundImage: AMBER_GRAD }}>
               Browse Fonts →
-            </a>
-          </div>
-        </Reveal>
-      </main>
+            </Link>
+          </Reveal>
+        </div>
+      </section>
 
       <Footer />
 
